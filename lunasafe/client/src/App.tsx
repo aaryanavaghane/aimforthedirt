@@ -1071,16 +1071,7 @@ export const App: React.FC = () => {
                     }`}
                   >
                     <MapPin className="w-3.5 h-3.5" />
-                    <span>Leaflet GIS Pins</span>
-                  </button>
-                  <button
-                    onClick={() => setZoomLayerMode('raster')}
-                    className={`px-3 py-1.5 rounded flex items-center gap-1.5 transition-colors ${
-                      zoomLayerMode === 'raster' ? 'bg-emerald-600 text-white font-bold shadow' : 'text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    <Layers className="w-3.5 h-3.5" />
-                    <span>DEM Rasters</span>
+                    <span>Lunar Tactical Map</span>
                   </button>
                   <button
                     onClick={() => setZoomLayerMode('quickmap_embed')}
@@ -1089,7 +1080,16 @@ export const App: React.FC = () => {
                     }`}
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
-                    <span>Live LROC GIS</span>
+                    <span>NASA LROC Satellite</span>
+                  </button>
+                  <button
+                    onClick={() => setZoomLayerMode('raster')}
+                    className={`px-3 py-1.5 rounded flex items-center gap-1.5 transition-colors ${
+                      zoomLayerMode === 'raster' ? 'bg-emerald-600 text-white font-bold shadow' : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    <Layers className="w-3.5 h-3.5" />
+                    <span>DEM Altimetry</span>
                   </button>
                 </div>
               </div>
@@ -1112,69 +1112,129 @@ export const App: React.FC = () => {
               {/* MAP VIEWPORT: Leaflet vs DEM Raster vs Live QuickMap */}
               <div className="relative w-full h-[520px] rounded-xl overflow-hidden border border-slate-800 bg-[#000000] shadow-2xl">
                 {zoomLayerMode === 'leaflet' ? (
-                  <MapContainer
-                    center={[selectedRegion.lat, selectedRegion.lon]}
-                    zoom={9}
-                    scrollWheelZoom={true}
-                    className="w-full h-full z-10"
-                  >
-                    <MapRecenter center={[selectedRegion.lat, selectedRegion.lon]} zoom={9} />
+                  <div className="relative w-full h-full bg-[#02050b] flex items-center justify-center overflow-hidden">
+                    {/* Deep Space Background Grid */}
+                    <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none" />
 
-                    {/* Dark Space Cartography TileLayer */}
-                    <TileLayer
-                      attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-                      url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                    />
+                    {/* Regional Lunar Terrain Underlay */}
+                    {currentLayerImg && (
+                      <img
+                        src={currentLayerImg}
+                        alt="Regional Lunar Surface"
+                        className="absolute inset-0 w-full h-full object-cover opacity-75 filter contrast-125"
+                      />
+                    )}
 
-                    {/* Survey Radius Circle */}
-                    <Circle
-                      center={[selectedRegion.lat, selectedRegion.lon]}
-                      radius={surveyRadiusKm * 1000}
-                      pathOptions={{ color: '#D4AF37', weight: 1.5, fillOpacity: 0.06, dashArray: '6, 6' }}
-                    />
+                    {/* Radar Coordinate Crosshair & Range Rings */}
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      {/* 200km Survey Boundary Circle */}
+                      <div className="w-[82%] h-[82%] rounded-full border border-[#D4AF37]/50 border-dashed animate-[spin_120s_linear_infinite]" />
+                      <div className="w-[58%] h-[58%] rounded-full border border-cyan-500/25 border-dashed" />
+                      <div className="w-[32%] h-[32%] rounded-full border border-cyan-500/20" />
+                      <div className="w-[8%] h-[8%] rounded-full border border-cyan-400/40" />
 
-                    {/* Safe and Risky Pin Markers */}
-                    {selectedRegion.mapPoints.map((pt) => (
-                      <Marker
-                        key={pt.id}
-                        position={[pt.lat, pt.lon]}
-                        icon={pt.isSafe ? safeIcon : riskyIcon}
-                      >
-                        <Popup className="font-sans">
-                          <div className="p-1 space-y-2 min-w-[220px]">
-                            <div className="flex items-center justify-between border-b border-slate-700 pb-1.5">
-                              <span className={`font-mono text-xs font-bold ${pt.isSafe ? 'text-emerald-400' : 'text-rose-400'}`}>
-                                {pt.status === 'SAFE' ? '🟢 SAFE TOUCHDOWN' : '🔴 HAZARD / RISKY'}
-                              </span>
-                              <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${pt.isSafe ? 'bg-emerald-950 text-emerald-300 border border-emerald-600' : 'bg-rose-950 text-rose-300 border border-rose-600'}`}>
-                                {pt.score}
-                              </span>
+                      {/* Central Crosshair */}
+                      <div className="absolute w-full h-[1px] bg-cyan-500/15" />
+                      <div className="absolute h-full w-[1px] bg-cyan-500/15" />
+
+                      {/* Radar Range Labels */}
+                      <span className="absolute top-[10%] left-1/2 -translate-x-1/2 text-[10px] font-mono text-[#D4AF37] bg-black/70 px-2 py-0.5 rounded border border-[#D4AF37]/40">
+                        {surveyRadiusKm} km Survey Perimeter
+                      </span>
+                      <span className="absolute top-[22%] left-1/2 -translate-x-1/2 text-[9px] font-mono text-cyan-400/70">
+                        {Math.round(surveyRadiusKm * 0.65)} km
+                      </span>
+                      <span className="absolute top-[35%] left-1/2 -translate-x-1/2 text-[9px] font-mono text-cyan-400/70">
+                        {Math.round(surveyRadiusKm * 0.35)} km
+                      </span>
+                    </div>
+
+                    {/* Interactive Green (Safe) & Red (Risky) Pin Points */}
+                    {selectedRegion.mapPoints.map((pt, idx) => {
+                      const angle = (idx / selectedRegion.mapPoints.length) * Math.PI * 2 + (pt.isSafe ? 0.3 : -0.4);
+                      const dist = pt.isSafe ? 0.22 + idx * 0.08 : 0.32 + idx * 0.06;
+                      const topPct = 50 + Math.sin(angle) * dist * 90;
+                      const leftPct = 50 + Math.cos(angle) * dist * 90;
+                      const isActive = activePointId === pt.id;
+
+                      return (
+                        <div
+                          key={pt.id}
+                          style={{ top: `${topPct}%`, left: `${leftPct}%` }}
+                          onClick={() => setActivePointId(isActive ? null : pt.id)}
+                          className="absolute -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer group"
+                        >
+                          {/* Pin Icon with Glow */}
+                          <div className="relative flex items-center justify-center">
+                            <div className={`w-6 h-6 rounded-full flex items-center justify-center border-2 shadow-lg transition-transform group-hover:scale-125 ${
+                              pt.isSafe
+                                ? 'bg-emerald-500/30 border-emerald-400 shadow-[0_0_15px_#10B981]'
+                                : 'bg-rose-500/30 border-rose-400 shadow-[0_0_15px_#F43F5E]'
+                            }`}>
+                              <div className={`w-2.5 h-2.5 rounded-full ${pt.isSafe ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'}`} />
                             </div>
 
-                            <div>
-                              <div className="font-bold text-sm text-white">{pt.name}</div>
-                              <div className="font-mono text-[11px] text-cyan-300 mt-0.5">
-                                {pt.lat.toFixed(3)}°, {pt.lon.toFixed(3)}°
-                              </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-1.5 font-mono text-[11px] bg-black/50 p-2 rounded border border-slate-800">
-                              <div>
-                                <span className="text-slate-400 block text-[9px]">SLOPE</span>
-                                <span className={pt.isSafe ? 'text-emerald-300 font-bold' : 'text-rose-300 font-bold'}>{pt.slope}</span>
-                              </div>
-                              <div>
-                                <span className="text-slate-400 block text-[9px]">HAZARD</span>
-                                <span className={pt.isSafe ? 'text-emerald-300 font-bold' : 'text-rose-300 font-bold'}>{pt.hazard}</span>
-                              </div>
-                            </div>
-
-                            <p className="text-[11px] text-slate-300 leading-relaxed">{pt.reason}</p>
+                            {/* Pin Name Badge */}
+                            <span className={`absolute top-7 px-2.5 py-1 rounded-md text-[10px] font-mono font-bold whitespace-nowrap border backdrop-blur-md shadow-xl transition-all ${
+                              pt.isSafe
+                                ? 'bg-[#02180e]/90 text-emerald-300 border-emerald-500/60'
+                                : 'bg-[#180407]/90 text-rose-300 border-rose-500/60'
+                            }`}>
+                              {pt.isSafe ? '🟢 ' : '🔴 '}{pt.name} · {pt.score}
+                            </span>
                           </div>
-                        </Popup>
-                      </Marker>
-                    ))}
-                  </MapContainer>
+
+                          {/* Click Telemetry Popup Card */}
+                          {isActive && (
+                            <div
+                              onClick={(e) => e.stopPropagation()}
+                              className="absolute bottom-10 left-1/2 -translate-x-1/2 w-64 bg-[#050810]/95 border border-slate-700 rounded-xl p-3.5 shadow-2xl backdrop-blur-xl z-30 space-y-2 text-xs"
+                            >
+                              <div className="flex items-center justify-between border-b border-slate-800 pb-1.5 font-mono">
+                                <span className={pt.isSafe ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold'}>
+                                  {pt.status === 'SAFE' ? '🟢 OPTIMAL TOUCHDOWN' : '🔴 CRITICAL HAZARD'}
+                                </span>
+                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                                  pt.isSafe ? 'bg-emerald-950 text-emerald-300 border border-emerald-600' : 'bg-rose-950 text-rose-300 border border-rose-600'
+                                }`}>
+                                  {pt.score}
+                                </span>
+                              </div>
+
+                              <div>
+                                <div className="font-bold text-white text-xs">{pt.name}</div>
+                                <div className="text-[10px] font-mono text-cyan-300 mt-0.5">
+                                  {pt.lat.toFixed(3)}°, {pt.lon.toFixed(3)}°
+                                </div>
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-1.5 font-mono text-[10px] bg-black/60 p-1.5 rounded border border-slate-800">
+                                <div>
+                                  <span className="text-slate-400 block text-[8px]">SLOPE</span>
+                                  <span className={pt.isSafe ? 'text-emerald-300 font-bold' : 'text-rose-300 font-bold'}>{pt.slope}</span>
+                                </div>
+                                <div>
+                                  <span className="text-slate-400 block text-[8px]">HAZARD</span>
+                                  <span className={pt.isSafe ? 'text-emerald-300 font-bold' : 'text-rose-300 font-bold'}>{pt.hazard}</span>
+                                </div>
+                              </div>
+
+                              <p className="text-[10px] text-slate-300 leading-relaxed font-sans">{pt.reason}</p>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+
+                    {/* HUD Status Bar */}
+                    <div className="absolute bottom-3 left-3 bg-[#050810]/90 backdrop-blur border border-slate-800 px-3 py-1.5 rounded-lg text-[11px] text-slate-300 flex items-center gap-3 font-mono z-10">
+                      <span className="text-[#D4AF37] font-bold">Lunar Surface Cartography</span>
+                      <span>•</span>
+                      <span className="text-emerald-400">{selectedRegion.name}</span>
+                      <span>•</span>
+                      <span>Click any pin to inspect telemetry</span>
+                    </div>
+                  </div>
                 ) : zoomLayerMode === 'raster' ? (
                   currentLayerImg ? (
                     <div className="relative w-full h-full flex items-center justify-center">
