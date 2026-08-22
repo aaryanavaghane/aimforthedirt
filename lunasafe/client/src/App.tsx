@@ -90,6 +90,9 @@ interface RegionData {
     score: string;
     slope: string;
     hazard: string;
+    craters: string;
+    boulders: string;
+    clearance: string;
     tippingMargin: string;
     thermalIllum: string;
     commsLine: string;
@@ -123,6 +126,9 @@ const REGIONS: Record<string, RegionData> = {
       score: "94%",
       slope: "4.2° (Well within ≤ 8.5° limit)",
       hazard: "3.8% (Negligible rock density)",
+      craters: "2 minor sub-meter rim depressions (Ø < 1.2m)",
+      boulders: "0 boulder / rock clusters > 0.5m detected",
+      clearance: "96.2% unobstructed landing regolith",
       tippingMargin: "51% structural margin above tipping threshold",
       thermalIllum: ">85% continuous solar line-of-sight (185K–225K nominal)",
       commsLine: "Direct line-of-sight to Earth deep-space ground stations",
@@ -140,7 +146,7 @@ const REGIONS: Record<string, RegionData> = {
         slope: '4.2°',
         hazard: '3.8%',
         status: 'SAFE',
-        reason: 'Optimal touchdown site: minimal tilt risk, clear regolith, stable geotechnical footing.'
+        reason: 'Optimal touchdown site: minimal tilt risk, clear regolith, 0 rock obstacles.'
       },
       {
         id: 'p2',
@@ -152,7 +158,7 @@ const REGIONS: Record<string, RegionData> = {
         slope: '5.1°',
         hazard: '6.2%',
         status: 'SAFE',
-        reason: 'Safe alternate target: acceptable slope and good solar line-of-sight.'
+        reason: 'Safe alternate target: acceptable slope, 1 shallow crater, good solar line-of-sight.'
       },
       {
         id: 'p3',
@@ -164,7 +170,7 @@ const REGIONS: Record<string, RegionData> = {
         slope: '28.4°',
         hazard: '68%',
         status: 'RISKY',
-        reason: 'Severe hazard: steep crater wall exceeds 8.5° tipping limit with high rollover risk.'
+        reason: 'Severe hazard: 14 crater rims and 9 rock clusters exceed 8.5° tipping limit with high rollover risk.'
       },
       {
         id: 'p4',
@@ -176,7 +182,7 @@ const REGIONS: Record<string, RegionData> = {
         slope: '19.8°',
         hazard: '74%',
         status: 'RISKY',
-        reason: 'High risk: dense boulder clusters capable of puncturing lander baseplate.'
+        reason: 'High risk: dense boulder and rock clusters capable of puncturing lander baseplate.'
       }
     ]
   },
@@ -203,6 +209,9 @@ const REGIONS: Record<string, RegionData> = {
       score: "78%",
       slope: "6.8° (Acceptable)",
       hazard: "12.0% (Moderate gravel)",
+      craters: "5 micro-craters on ridge crest",
+      boulders: "3 small gravel/rock clusters (<0.4m)",
+      clearance: "88.0% clear path",
       tippingMargin: "20% structural margin above tipping threshold",
       thermalIllum: "Illuminated ridge with direct solar line-of-sight",
       commsLine: "Periodic lunar orbiter relay required due to low polar angle",
@@ -220,7 +229,7 @@ const REGIONS: Record<string, RegionData> = {
         slope: '6.8°',
         hazard: '12%',
         status: 'SAFE',
-        reason: 'Best available polar candidate on high-altitude solar-illuminated ridge.'
+        reason: 'Best available polar candidate on high-altitude solar-illuminated ridge with low rock density.'
       },
       {
         id: 'p2',
@@ -244,7 +253,7 @@ const REGIONS: Record<string, RegionData> = {
         slope: '34.5°',
         hazard: '88%',
         status: 'RISKY',
-        reason: 'Critical hazard: permanent dark cold-trap with vertical ice-rock dropoffs (<80K).'
+        reason: 'Critical hazard: 22 steep crater walls with vertical ice-rock dropoffs (<80K).'
       }
     ]
   },
@@ -271,6 +280,9 @@ const REGIONS: Record<string, RegionData> = {
       score: "91%",
       slope: "5.8° (Safe ≤ 8.5° limit)",
       hazard: "7.5% (Low hazard)",
+      craters: "3 shallow rim pockets (Ø < 1.0m)",
+      boulders: "1 low-lying rock cluster",
+      clearance: "92.5% clear plain",
       tippingMargin: "32% structural margin above tipping threshold",
       thermalIllum: "85%+ annual solar power line-of-sight (Peak of Eternal Light)",
       commsLine: "Continuous unobstructed Earth direct radio visibility",
@@ -336,14 +348,17 @@ const REGIONS: Record<string, RegionData> = {
     pinStyle: { top: '64%', left: '26%' },
     mostSafeDetails: {
       name: "Least Dangerous Pocket (Zone 1 - ABORT MANDATED)",
-      score: "44% (FAIL)",
-      slope: "18.2° (Exceeds 8.5° limit)",
-      hazard: "39.0% (Severe roughness)",
-      tippingMargin: "0% margin — violates rollover safety envelope",
-      thermalIllum: "Heavy shadow occlusions across survey basin",
-      commsLine: "Marginal line-of-sight due to high crater rim walls",
-      consensus: "Perception and Elevation models trigger autonomous abort",
-      rationale: "No safe landing site exists in this region. The flight computer correctly mandates an emergency abort."
+      score: "41% (ABORT)",
+      slope: "31.8° (CRITICAL HAZARD > 8.5°)",
+      hazard: "41.0% (Severe crater ejecta)",
+      craters: "38 steep crater rims & dropoffs",
+      boulders: "24 sharp boulder/rock ejecta clusters",
+      clearance: "32.0% clear (HIGH COLLISION RISK)",
+      tippingMargin: "NEGATIVE MARGIN (-274% over tipping limit)",
+      thermalIllum: "Severe shadow occlusion (>65% shadow coverage)",
+      commsLine: "Occasional topography blocking to Earth DSN stations",
+      consensus: "All 3 modalities (Optical, Elevation, Thermal) confirm extreme hazard",
+      rationale: "Extreme slope (31.8°) and dense boulder field will cause structural gear rollover upon touchdown. Autonomous abort recommended."
     },
     mapPoints: [
       {
@@ -577,6 +592,9 @@ export const App: React.FC = () => {
         score: "92%",
         slope: "4.5° (Safe ≤ 8.5°)",
         hazard: "5.0% (Clear terrain)",
+        craters: "3 sub-meter craters mapped via YOLOv8",
+        boulders: "0 hazardous boulder clusters detected",
+        clearance: "95.0% clear landing regolith",
         tippingMargin: "47% structural margin above tipping threshold",
         thermalIllum: "Nominal thermal illumination band",
         commsLine: "Direct line-of-sight to telemetry ground stations",
@@ -997,6 +1015,34 @@ export const App: React.FC = () => {
                 </div>
               </div>
 
+              {/* YOLOv8 Optical Obstacle Perception Analytics (Craters, Boulders & Rocks) */}
+              <div className="bg-[#030914] p-4 rounded-xl border border-cyan-500/30 space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="font-mono text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-2">
+                    <Crosshair className="w-4 h-4 text-cyan-400" />
+                    <span>YOLOv8 Optical Perception Analytics (Craters & Rock Boulders)</span>
+                  </div>
+                  <span className="text-[10px] font-mono text-cyan-300 bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-800">
+                    Sub-meter Fine Sweep AI
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs">
+                  <div className="bg-black/60 p-2.5 rounded-lg border border-slate-800">
+                    <span className="text-slate-400 text-[10px] block">🕳️ CRATER DETECTION DENSITY</span>
+                    <span className="font-bold text-white mt-1 block text-[11px]">{selectedRegion.mostSafeDetails.craters}</span>
+                  </div>
+                  <div className="bg-black/60 p-2.5 rounded-lg border border-slate-800">
+                    <span className="text-slate-400 text-[10px] block">🪨 BOULDER & ROCK CLUSTERS</span>
+                    <span className="font-bold text-white mt-1 block text-[11px]">{selectedRegion.mostSafeDetails.boulders}</span>
+                  </div>
+                  <div className="bg-black/60 p-2.5 rounded-lg border border-slate-800">
+                    <span className="text-slate-400 text-[10px] block">🛡️ CLEAR REGOLITH RATIO</span>
+                    <span className="font-bold text-emerald-300 mt-1 block text-[11px]">{selectedRegion.mostSafeDetails.clearance}</span>
+                  </div>
+                </div>
+              </div>
+
               {/* Plain Language Summary */}
               <div className="p-3.5 bg-emerald-950/40 border border-emerald-500/40 rounded-xl text-xs text-emerald-200 leading-relaxed">
                 💡 <span className="font-bold">Flight Decision Summary:</span> {selectedRegion.mostSafeDetails.rationale}
@@ -1020,9 +1066,11 @@ export const App: React.FC = () => {
               </div>
 
               <div className="bg-[#080c14]/85 border border-slate-800/80 rounded-xl p-5 backdrop-blur-md">
-                <div className="font-mono text-[10px] tracking-[0.15em] text-[#94A3B8] uppercase">Terrain Roughness</div>
-                <div className="text-2xl font-black text-white mt-2 font-mono">{selectedRegion.roughness}</div>
-                <div className="text-xs text-[#94A3B8] mt-1 font-sans">local elevation variance (TRI)</div>
+                <div className="font-mono text-[10px] tracking-[0.15em] text-[#94A3B8] uppercase">YOLO Hazard & Crater Density</div>
+                <div className={`text-2xl font-black mt-2 font-mono ${parseFloat(selectedRegion.hazard) > 30 ? 'text-[#F43F5E]' : 'text-[#4ADE80]'}`}>
+                  {selectedRegion.hazard}
+                </div>
+                <div className="text-xs text-[#94A3B8] mt-1 font-sans">Crater rims & rock clusters mapped</div>
               </div>
 
               <div className="bg-[#080c14]/85 border border-slate-800/80 rounded-xl p-5 backdrop-blur-md">
