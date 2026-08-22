@@ -116,7 +116,7 @@ const REGIONS: Record<string, RegionData> = {
     flag: null,
     rationale: "Zone A selected — low boulder/crater density, slope well within 8.5° landing gear tipping limit, and minimal shadow occlusion. The scoring engine independently ranks this zone highest using pre-landing optical and elevation data.",
     groundtruth: "Top-ranked zone falls 1.3 km from the real Shiv Shakti Point — independently recovered using multi-sensor fusion.",
-    quickmapExtent: 'extent=32.1,-69.5,32.5,-69.2&center=32.319,-69.373&zoom=15',
+    quickmapExtent: 'prjExtent=-4658894.0053051%2C-2032529.978284%2C5293105.9946949%2C2375470.021716&center=32.319,-69.373&zoom=15&earthShadowEnabled=true&proj=10&stack=3314&defs=N4IgzGCMAsIFygPYAcCGBjAlgFwJ70gF9Cg',
     pinStyle: { top: '58%', left: '44%' },
     mostSafeDetails: {
       name: "Shiv Shakti Touchdown Basin (Primary Zone A)",
@@ -196,7 +196,7 @@ const REGIONS: Record<string, RegionData> = {
     flag: 'reduced_confidence — thermal sensor degraded in deep shadow',
     rationale: "Zone B selected as best available on illuminated ridge crest, but shadow coverage exceeds 40% in crater cavity. Thermal channel lost signal in deep cold trap — remaining weight redistributed to elevation data.",
     groundtruth: "Simulates challenging polar ridge terrain with deep cold-trap PSR volatiles.",
-    quickmapExtent: 'extent=-1.0,-90.0,1.0,-89.8&center=0.0,-89.9&zoom=14',
+    quickmapExtent: 'prjExtent=-4658894.0053051%2C-2032529.978284%2C5293105.9946949%2C2375470.021716&center=0.0,-89.9&zoom=14&earthShadowEnabled=true&proj=10&stack=3314&defs=N4IgzGCMAsIFygPYAcCGBjAlgFwJ70gF9Cg',
     pinStyle: { top: '84%', left: '50%' },
     mostSafeDetails: {
       name: "Shackleton Connecting Ridge Crest (Zone B)",
@@ -264,7 +264,7 @@ const REGIONS: Record<string, RegionData> = {
     flag: null,
     rationale: "High mesa plateau with continuous solar line-of-sight (>85% illumination). Slope gradient 5.8° within structural envelope, bordered by steep 20° cliff flanks.",
     groundtruth: "Candidate site for long-duration lunar outpost with continuous Earth direct communications.",
-    quickmapExtent: 'extent=-2.0,-86.2,2.0,-85.6&center=0.0,-85.9&zoom=14',
+    quickmapExtent: 'prjExtent=-4658894.0053051%2C-2032529.978284%2C5293105.9946949%2C2375470.021716&center=0.0,-85.9&zoom=14&earthShadowEnabled=true&proj=10&stack=3314&defs=N4IgzGCMAsIFygPYAcCGBjAlgFwJ70gF9Cg',
     pinStyle: { top: '74%', left: '68%' },
     mostSafeDetails: {
       name: "Malapert Peak Summit Mesa (Zone 1)",
@@ -332,7 +332,7 @@ const REGIONS: Record<string, RegionData> = {
     flag: 'no_safe_zone — recommend abort/reroute',
     rationale: "No candidate zone in this region clears the safety threshold. Slope and roughness far exceed tolerance across the shortlist. Rather than force a low-confidence pick, the system flags the region as unsafe.",
     groundtruth: "Correctly flags the elevated slope/roughness that contributed to this site's historical outcome, instead of forcing a confident-looking pick.",
-    quickmapExtent: 'extent=22.6,-71.1,23.0,-70.7&center=22.8,-70.9&zoom=15',
+    quickmapExtent: 'prjExtent=-4658894.0053051%2C-2032529.978284%2C5293105.9946949%2C2375470.021716&center=22.8,-70.9&zoom=15&earthShadowEnabled=true&proj=10&stack=3314&defs=N4IgzGCMAsIFygPYAcCGBjAlgFwJ70gF9Cg',
     pinStyle: { top: '64%', left: '26%' },
     mostSafeDetails: {
       name: "Least Dangerous Pocket (Zone 1 - ABORT MANDATED)",
@@ -391,12 +391,15 @@ function MapRecenter({ center, zoom }: { center: [number, number]; zoom: number 
   return null;
 }
 
+const DEFAULT_QUICKMAP_URL = 'https://quickmap.lroc.im-ldi.com/?prjExtent=-4658894.0053051%2C-2032529.978284%2C5293105.9946949%2C2375470.021716&earthShadowEnabled=true&proj=10&stack=3314&defs=N4IgzGCMAsIFygPYAcCGBjAlgFwJ70gF9Cg';
+
 export const App: React.FC = () => {
   const [selectedRegion, setSelectedRegion] = useState<RegionData | null>(REGIONS.cy3);
   const [surveyRadiusKm, setSurveyRadiusKm] = useState<number>(200);
   const [mapMode, setMapMode] = useState<'globe' | 'quickmap'>('globe');
-  const [zoomLayerMode, setZoomLayerMode] = useState<'leaflet' | 'raster' | 'quickmap_embed'>('leaflet');
+  const [zoomLayerMode, setZoomLayerMode] = useState<'quickmap_embed' | 'leaflet' | 'raster'>('quickmap_embed');
   const [activeLayer, setActiveLayer] = useState<string>('safety_200km');
+  const [activePointId, setActivePointId] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [loadingText, setLoadingText] = useState<string>('');
   const [showResults, setShowResults] = useState<boolean>(false);
@@ -681,7 +684,7 @@ export const App: React.FC = () => {
 
   const quickmapUrl = selectedRegion
     ? `https://quickmap.lroc.im-ldi.com/?${selectedRegion.quickmapExtent}`
-    : 'https://quickmap.lroc.im-ldi.com/';
+    : DEFAULT_QUICKMAP_URL;
 
   const currentLayerImg = analysisData?.layers
     ? analysisData.layers[activeLayer] ||
