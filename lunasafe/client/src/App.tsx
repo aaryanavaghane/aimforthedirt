@@ -761,6 +761,16 @@ export const App: React.FC = () => {
               >
                 <img
                   src={moonStarsImg}
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (!target.dataset.fallback) {
+                      target.dataset.fallback = '1';
+                      target.src = './moon_stars.png';
+                    } else if (target.dataset.fallback === '1') {
+                      target.dataset.fallback = '2';
+                      target.src = '/aimforthedirt/moon_stars.png';
+                    }
+                  }}
                   alt="Realistic Moon"
                   className="w-full h-full object-cover rounded-full"
                 />
