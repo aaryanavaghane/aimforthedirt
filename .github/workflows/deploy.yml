@@ -30,19 +30,19 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-          cache-dependency-path: lunasafe/client/package-lock.json
 
       - name: Install Client Dependencies
         working-directory: lunasafe/client
-        run: npm ci || npm install
+        run: npm install
 
       - name: Build Production Bundle
         working-directory: lunasafe/client
         run: npm run build
 
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
