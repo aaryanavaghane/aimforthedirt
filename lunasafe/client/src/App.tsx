@@ -35,7 +35,7 @@ import L from 'leaflet';
 import { apiClient } from './services/api';
 import { AnalysisResponse, SensorHealth, MissionWeights } from './types/landing';
 
-const moonStarsImg = '/moon_stars.png';
+import moonStarsImg from './assets/moon_stars.png';
 
 // Leaflet Custom Icons
 const safeIcon = L.divIcon({
