@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Large binaries and datasets
+*.exe
+*.zip
+*.tar
+*.gz
+*.rar
+lunasafe/Antigravity-x64*.exe
+lunasafe/Dataset_yolo.zip
+
+# Python
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv/
+audit.db
+**/audit.db
+
+# Build outputs
+dist/
+lunasafe/client/dist/
+build/
+*.egg-info/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment & IDE
+.env
+.env.local
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+awesome/

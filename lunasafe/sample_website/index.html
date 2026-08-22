@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUNA-SAFE | AI Landing Risk Assessment</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:#070b14;color:#eaf0ff}
+.app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+.sidebar{background:#0b1020;border-right:1px solid #1d2740;padding:24px 18px}
+.logo{font-weight:800;font-size:20px;letter-spacing:.5px;margin-bottom:35px}.logo span{color:#79a7ff}
+.nav div{padding:12px 13px;margin:5px 0;border-radius:10px;color:#8996b3;font-size:14px}.nav .active{background:#182440;color:#fff}
+.status{position:absolute;bottom:24px;width:190px;padding:12px;border:1px solid #263452;border-radius:12px;background:#10182a;font-size:12px;color:#9aa8c5}.dot{display:inline-block;width:7px;height:7px;background:#55d98b;border-radius:50%;margin-right:6px}
+main{padding:28px 32px;max-width:1400px;width:100%;margin:auto}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}.eyebrow{font-size:11px;color:#7890bb;letter-spacing:2px}.title{font-size:28px;font-weight:750;margin:5px 0}.sub{color:#8996b3;font-size:13px}.mission{border:1px solid #263452;background:#10182a;padding:9px 13px;border-radius:10px;font-size:12px;color:#aebbd4}
+.grid{display:grid;grid-template-columns:1.45fr .8fr;gap:18px}.card{background:#0e1525;border:1px solid #202c46;border-radius:15px;padding:18px;box-shadow:0 10px 30px #0003}.card h3{margin:0 0 14px;font-size:14px}.map{height:390px;position:relative;overflow:hidden;background:radial-gradient(circle at 35% 35%,#263a52,#101927 42%,#0a101b 75%);border-radius:12px;border:1px solid #263452}
+.map:before{content:"";position:absolute;inset:-20%;background:repeating-radial-gradient(ellipse at 60% 40%,transparent 0 45px,#17273b 47px 49px);opacity:.45;transform:rotate(-14deg)}
+.zone{position:absolute;border:2px solid;border-radius:50%;width:105px;height:105px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;backdrop-filter:blur(2px)}
+.z1{left:13%;top:20%;border-color:#e35d68;background:#e35d6820}.z2{left:48%;top:17%;border-color:#f2b84b;background:#f2b84b20}.z3{left:63%;top:52%;border-color:#55d98b;background:#55d98b22;box-shadow:0 0 25px #55d98b35}.z4{left:25%;top:60%;border-color:#f2b84b;background:#f2b84b20}
+.hazard{position:absolute;font-size:22px}.rock1{left:29%;top:32%}.rock2{left:76%;top:25%}.rock3{left:52%;top:72%}.crater1{left:8%;top:68%;font-size:42px;opacity:.7}.crater2{left:79%;top:65%;font-size:35px;opacity:.65}
+.maplabel{position:absolute;left:14px;top:12px;background:#080d18cc;border:1px solid #293754;padding:7px 10px;border-radius:8px;font-size:11px;color:#aab7cf}
+.legend{display:flex;gap:15px;margin-top:12px;font-size:11px;color:#8996b3}.lg{display:flex;align-items:center;gap:6px}.box{width:9px;height:9px;border-radius:50%}.safe{background:#55d98b}.med{background:#f2b84b}.high{background:#e35d68}
+.sidecol{display:flex;flex-direction:column;gap:18px}.recommend{border-color:#2e7751;background:linear-gradient(145deg,#10251d,#0e1525)}.rec{font-size:25px;font-weight:800;margin:5px 0}.green{color:#55d98b}.score{font-size:38px;font-weight:800}.bar{height:7px;background:#1e2a40;border-radius:10px;overflow:hidden;margin:8px 0 15px}.bar i{display:block;height:100%;width:18%;background:#55d98b;border-radius:10px}.stats{display:grid;grid-template-columns:1fr 1fr;gap:9px}.stat{background:#111b2d;padding:11px;border-radius:9px}.stat b{display:block;font-size:15px}.stat span{font-size:10px;color:#7e8ba6}
+button{width:100%;border:0;border-radius:10px;padding:13px;background:#6f9fff;color:#06101f;font-weight:800;cursor:pointer;margin-top:13px}button:hover{filter:brightness(1.08)}
+.zones{margin-top:18px}.zone-row{display:grid;grid-template-columns:70px 1fr 70px 90px;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid #1d2840;font-size:12px}.riskbar{height:6px;background:#1c273d;border-radius:8px}.riskbar i{display:block;height:100%;border-radius:8px;background:#f2b84b}.low{color:#55d98b}.hightext{color:#e35d68}
+.bottom{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.event{padding:11px 0;border-bottom:1px solid #1d2840;font-size:12px}.event small{color:#687792;display:block;margin-top:3px}
+@media(max-width:900px){.app{grid-template-columns:1fr}.sidebar{display:none}.grid,.bottom{grid-template-columns:1fr}main{padding:18px}.map{height:320px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="logo">LUNA<span>SAFE</span></div>
+  <div class="nav">
+    <div class="active">Mission Overview</div><div>Terrain Analysis</div><div>Landing Zones</div><div>Risk Reports</div>
+  </div>
+  <div class="status"><span class="dot"></span>AI analysis engine online</div>
+</aside>
+<main>
+  <div class="top">
+    <div><div class="eyebrow">AI-BASED LANDING RISK ASSESSMENT</div><div class="title">Lunar Landing Site Analysis</div><div class="sub">Autonomous decision support for safer planetary landings</div></div>
+    <div class="mission">MISSION L-07 · MOON · SOUTH POLE</div>
+  </div>
+
+  <div class="grid">
+    <section class="card">
+      <h3>Terrain hazard map</h3>
+      <div class="map">
+        <div class="maplabel">AI terrain scan · 84% confidence</div>
+        <div class="zone z1">ZONE A</div><div class="zone z2">ZONE B</div><div class="zone z3">ZONE C ★</div><div class="zone z4">ZONE D</div>
+        <div class="hazard rock1">◆</div><div class="hazard rock2">◆</div><div class="hazard rock3">◆</div>
+        <div class="hazard crater1">◯</div><div class="hazard crater2">◯</div>
+      </div>
+      <div class="legend"><div class="lg"><i class="box safe"></i>Low risk</div><div class="lg"><i class="box med"></i>Moderate</div><div class="lg"><i class="box high"></i>High risk</div><div>◆ Rock</div><div>◯ Crater</div></div>
+    </section>
+
+    <div class="sidecol">
+      <section class="card recommend">
+        <h3>Recommended landing zone</h3>
+        <div class="rec green">ZONE C</div>
+        <div class="sub">Lowest predicted landing risk</div>
+        <div style="margin-top:15px;font-size:11px;color:#8c9bb5">OVERALL RISK</div>
+        <div class="score">18<span style="font-size:15px;color:#73819b"> / 100</span></div>
+        <div class="bar"><i></i></div>
+        <div class="stats">
+          <div class="stat"><b>4.2°</b><span>Slope</span></div><div class="stat"><b>Low</b><span>Rock density</span></div>
+          <div class="stat"><b>Safe</b><span>Crater proximity</span></div><div class="stat"><b>92%</b><span>AI confidence</span></div>
+        </div>
+        <button onclick="simulate()">SIMULATE NEW HAZARD</button>
+      </section>
+
+      <section class="card">
+        <h3>AI assessment</h3>
+        <div class="event"><b>✓ Hazard detection complete</b><small>12 rocks · 3 craters · 4 steep regions</small></div>
+        <div class="event"><b>✓ 4 candidate zones ranked</b><small>Terrain features weighted by landing risk</small></div>
+        <div class="event"><b>✓ Recommendation generated</b><small>Zone C selected as optimal landing area</small></div>
+      </section>
+    </div>
+  </div>
+
+  <section class="card zones">
+    <h3>Landing zone comparison</h3>
+    <div class="zone-row"><b>Zone</b><b>Risk profile</b><b>Score</b><b>Status</b></div>
+    <div class="zone-row"><b>A</b><div class="riskbar"><i style="width:72%;background:#e35d68"></i></div><b>72</b><span class="hightext">High</span></div>
+    <div class="zone-row"><b>B</b><div class="riskbar"><i style="width:41%"></i></div><b>41</b><span>Moderate</span></div>
+    <div class="zone-row"><b>C ★</b><div class="riskbar"><i style="width:18%;background:#55d98b"></i></div><b>18</b><span class="low">Recommended</span></div>
+    <div class="zone-row"><b>D</b><div class="riskbar"><i style="width:64%;background:#e35d68"></i></div><b>64</b><span class="hightext">High</span></div>
+  </section>
+
+  <div class="bottom">
+    <section class="card"><h3>Risk model inputs</h3>
+      <div class="stats"><div class="stat"><b>35%</b><span>Crater proximity weight</span></div><div class="stat"><b>30%</b><span>Slope weight</span></div><div class="stat"><b>25%</b><span>Rock density weight</span></div><div class="stat"><b>10%</b><span>Terrain roughness</span></div></div>
+    </section>
+    <section class="card"><h3>Mission decision</h3><div class="event"><b id="decision">LANDING GO: Zone C is within safe threshold.</b><small id="decisionSub">Recommended for autonomous landing assistance.</small></div></section>
+  </div>
+</main>
+</div>
+<script>
+function simulate(){
+  const rec=document.querySelector('.rec'), score=document.querySelector('.score'), bar=document.querySelector('.bar i');
+  rec.textContent='ZONE B'; rec.className='rec'; score.innerHTML='31<span style="font-size:15px;color:#73819b"> / 100</span>'; bar.style.width='31%'; bar.style.background='#f2b84b';
+  document.getElementById('decision').textContent='REVIEW: New hazard detected near Zone C.';
+  document.getElementById('decisionSub').textContent='AI recommends Zone B after dynamic re-assessment.';
+  document.querySelector('.recommend').style.borderColor='#7d6531';
+}
+</script>
+</body>
+</html>
