@@ -80,9 +80,10 @@ body {
 .moon-space-disc {
   position: relative;
   border-radius: 50%;
-  box-shadow: 0 0 70px rgba(180, 205, 240, 0.14);
+  box-shadow: 0 0 80px rgba(200, 225, 255, 0.28), 0 0 30px rgba(255, 255, 255, 0.12);
   transition: transform 0.08s linear;
   will-change: transform;
+  background: transparent;
 }
 
 .moon-space-disc img {
@@ -91,7 +92,8 @@ body {
   object-fit: cover;
   border-radius: 50%;
   pointer-events: none;
-  filter: contrast(1.06) brightness(1.01);
+  filter: contrast(1.15) brightness(1.15) drop-shadow(0 0 25px rgba(255, 255, 255, 0.15));
+  display: block;
 }
 
 .map-pin {
