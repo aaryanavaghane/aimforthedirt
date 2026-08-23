@@ -40,6 +40,7 @@ import Lenis from 'lenis';
 import { AtmosWebGLScene } from './components/AtmosWebGLScene';
 import { AtmosHUD } from './components/AtmosHUD';
 import { MagneticButton } from './components/MagneticButton';
+import { CockpitPOV } from './components/CockpitPOV';
 import { apiClient } from './services/api';
 import { AnalysisResponse, SensorHealth } from './types/landing';
 
@@ -728,114 +729,20 @@ export const App: React.FC = () => {
             </div>
           </div>
 
-          {/* PHASE 4 & 5: MOON ARRIVAL & INTERACTIVE "MOON OPTIONS" REVEAL (Visible at p: 0.88 -> 1.0) */}
-          <div
-            className="absolute inset-0 flex flex-col items-center justify-end pb-10 px-6 transition-all duration-700 pointer-events-auto"
-            style={{
-              opacity: scrollProgress > 0.85 ? Math.min(1, (scrollProgress - 0.85) / 0.12) : 0,
-              transform: `translateY(${scrollProgress > 0.85 ? 0 : 40}px)`,
-              pointerEvents: scrollProgress > 0.85 ? 'auto' : 'none',
-            }}
-          >
-            <div className="w-full max-w-5xl bg-[#050D24]/95 backdrop-blur-2xl border border-[#00F5FF]/40 rounded-3xl p-6 sm:p-8 shadow-[0_0_60px_rgba(0,245,255,0.35)] space-y-6">
-              
-              {/* Header Bar */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#00F5FF]/20 pb-4">
-                <div>
-                  <div className="flex items-center gap-2 text-xs font-mono text-[#38BDF8] uppercase tracking-wider font-bold">
-                    <Sparkles className="w-4 h-4 text-[#00F5FF]" />
-                    <span>Phase 5: Orbital Insertion Complete · Lunar Hover Lock</span>
-                  </div>
-                  <h3 className="text-xl sm:text-2xl font-extrabold text-white mt-1 font-heading">
-                    Select Target Lunar Landing Vector
-                  </h3>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <MagneticButton
-                    onClick={handleAnalyze}
-                    disabled={isAnalyzing}
-                    childrenPrimary={isAnalyzing ? 'Fusing Telemetry…' : `Scan ${surveyRadiusKm} km Area`}
-                    childrenSecondary={isAnalyzing ? 'Processing AI Models…' : 'Execute Risk Analysis'}
-                    icon={<Zap className="w-4 h-4 text-[#081B4B]" />}
-                    variant="pill"
-                  />
-                </div>
-              </div>
-
-              {/* 4 Interactive Moon Option Cards with Magnetic Hover */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-                {Object.values(REGIONS).map((reg) => {
-                  const isSelected = selectedRegion?.id === reg.id;
-                  return (
-                    <div
-                      key={reg.id}
-                      onClick={() => handleSelectRegion(reg.id)}
-                      className={`moon-option-card p-4 rounded-2xl border transition-all duration-300 cursor-pointer text-left space-y-2.5 relative group ${
-                        isSelected
-                          ? 'bg-gradient-to-b from-[#081B4B] to-[#030A1D] border-[#00F5FF] shadow-[0_0_25px_rgba(0,245,255,0.45)] scale-[1.02]'
-                          : 'bg-[#060E22]/80 border-[#00F5FF]/20 hover:border-[#00F5FF]/60 hover:bg-[#0B1D47]'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between font-mono text-[10px]">
-                        <span className={isSelected ? 'text-[#00F5FF] font-bold' : 'text-[#94A3B8]'}>
-                          {reg.id === 'cy3' ? 'TARGET A' : reg.id === 'sp' ? 'TARGET B' : reg.id === 'malapert' ? 'TARGET C' : 'TARGET D'}
-                        </span>
-                        <span className={`px-2 py-0.5 rounded font-bold ${
-                          reg.id === 'tir' ? 'bg-rose-950 text-rose-300 border border-rose-600' : 'bg-[#00F5FF]/20 text-[#38BDF8] border border-[#00F5FF]/40'
-                        }`}>
-                          {reg.mostSafeDetails.score}
-                        </span>
-                      </div>
-
-                      <div>
-                        <h4 className="font-extrabold text-sm text-white font-heading">{reg.name}</h4>
-                        <p className="text-[11px] text-[#94A3B8] font-mono mt-0.5">{reg.coords}</p>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-1 font-mono text-[9px] bg-black/60 p-2 rounded-lg border border-[#00F5FF]/15">
-                        <div>
-                          <span className="text-[#94A3B8] block">SLOPE</span>
-                          <span className="text-white font-bold">{reg.slope}</span>
-                        </div>
-                        <div>
-                          <span className="text-[#94A3B8] block">HAZARD</span>
-                          <span className="text-white font-bold">{reg.hazard}</span>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Survey Radius Slider */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-black/60 p-3.5 rounded-2xl border border-[#00F5FF]/20">
-                <div className="flex items-center gap-3">
-                  <Compass className="w-4 h-4 text-[#00F5FF]" />
-                  <span className="text-xs font-mono text-[#E2E8F0]">Regional Survey Radius:</span>
-                  <span className="text-sm font-bold font-mono text-[#00F5FF]">{surveyRadiusKm} km</span>
-                </div>
-                <input
-                  type="range"
-                  min="25"
-                  max="500"
-                  step="25"
-                  value={surveyRadiusKm}
-                  onChange={(e) => setSurveyRadiusKm(parseInt(e.target.value))}
-                  className="w-full sm:w-64 accent-[#00F5FF] cursor-pointer"
-                />
-              </div>
-
-              {/* Loading Status Progress Bar */}
-              {isAnalyzing && (
-                <div className="p-3 bg-[#081B4B]/90 rounded-xl border border-[#00F5FF]/50 text-xs font-mono text-[#38BDF8] flex items-center gap-3">
-                  <div className="w-4 h-4 rounded-full border-2 border-[#00F5FF] border-t-transparent animate-spin" />
-                  <span>{loadingText}</span>
-                </div>
-              )}
-            </div>
-          </div>
-
+          {/* PHASE 4 & 5: COCKPIT POV & FLIGHT DECK OVERLOOKING 3D MOON */}
+          <CockpitPOV
+            scrollProgress={scrollProgress}
+            selectedRegion={selectedRegion}
+            onSelectRegion={handleSelectRegion}
+            onAnalyze={handleAnalyze}
+            isAnalyzing={isAnalyzing}
+            loadingText={loadingText}
+            surveyRadiusKm={surveyRadiusKm}
+            setSurveyRadiusKm={setSurveyRadiusKm}
+            regions={REGIONS}
+            zoomLayerMode={zoomLayerMode}
+            setZoomLayerMode={setZoomLayerMode}
+          />
         </div>
       </div>
 

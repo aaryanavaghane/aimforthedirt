@@ -608,30 +608,36 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
       stars.position.y = -p * 40;
     }
 
-    // PHASE 4: Moon Arrival & Rocket Hover Lock (p: 0.65 -> 1.0)
+    // PHASE 4: Moon Arrival & Transition to 1st-Person Cockpit POV (p: 0.60 -> 1.0)
     if (moon) {
-      if (p > 0.45) {
-        const moonProgress = (p - 0.45) / 0.55;
-        const scale = THREE.MathUtils.lerp(0.1, 1.25, Math.pow(moonProgress, 1.8));
+      if (p > 0.40) {
+        const moonProgress = (p - 0.40) / 0.60;
+        // Moon scales up and centers perfectly in the front panoramic windshield
+        const scale = THREE.MathUtils.lerp(0.08, 1.55, Math.pow(moonProgress, 1.6));
         moon.scale.set(scale, scale, scale);
-        moon.position.y = THREE.MathUtils.lerp(32, 2.4, moonProgress);
-        moon.position.z = THREE.MathUtils.lerp(-90, -7.8, moonProgress);
+        moon.position.y = THREE.MathUtils.lerp(30, 1.4, Math.pow(moonProgress, 1.2));
+        moon.position.z = THREE.MathUtils.lerp(-95, -6.5, Math.pow(moonProgress, 1.4));
       } else {
         moon.scale.set(0.01, 0.01, 0.01);
       }
     }
 
-    // Rocket Deceleration and Hover Pitch
-    if (p > 0.75) {
-      const hoverProgress = (p - 0.75) / 0.25;
-      rocket.position.y = THREE.MathUtils.lerp(-0.6, -0.15, hoverProgress);
-      rocket.position.z = THREE.MathUtils.lerp(2.5, 3.2, hoverProgress);
-      if (thrusterPlumeRef.current) {
-        thrusterPlumeRef.current.scale.y = THREE.MathUtils.lerp(1.0, 0.45, hoverProgress);
+    // Spacecraft Transition: Zooms forward past camera into 1st-person cockpit
+    if (rocket) {
+      if (p > 0.60) {
+        const enterProgress = (p - 0.60) / 0.25; // 0.0 -> 1.0
+        // Camera moves forward past external hull into the cockpit
+        rocket.position.z = THREE.MathUtils.lerp(2.5, 14.5, enterProgress);
+        rocket.position.y = THREE.MathUtils.lerp(-0.6, -3.2, enterProgress);
+        if (thrusterPlumeRef.current) {
+          thrusterPlumeRef.current.scale.setScalar(Math.max(0, 1 - enterProgress));
+        }
+      } else {
+        rocket.position.set(0, -0.6, 2.5);
+        if (thrusterPlumeRef.current) {
+          thrusterPlumeRef.current.scale.setScalar(1.0);
+        }
       }
-    } else {
-      rocket.position.y = -0.6;
-      rocket.position.z = 2.5;
     }
   }, [scrollProgress]);
 
