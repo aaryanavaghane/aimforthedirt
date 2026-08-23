@@ -17,8 +17,10 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
   const warpLinesRef = useRef<THREE.LineSegments | null>(null);
   const moonMeshRef = useRef<THREE.Mesh | null>(null);
   const moonGlowRef = useRef<THREE.Mesh | null>(null);
-  const thrusterPlumeRef = useRef<THREE.Mesh | null>(null);
+  const thrusterPlumeRef = useRef<THREE.Group | null>(null);
   const thrusterLightRef = useRef<THREE.PointLight | null>(null);
+  const sparksPointsRef = useRef<THREE.Points | null>(null);
+  const antennaDishRef = useRef<THREE.Mesh | null>(null);
 
   // Mouse parallax interpolation
   const mouseRef = useRef({ x: 0, y: 0, targetX: 0, targetY: 0 });
@@ -30,7 +32,7 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
     // --- 1. SCENE SETUP ---
     const scene = new THREE.Scene();
     sceneRef.current = scene;
-    scene.fog = new THREE.FogExp2(0x061536, 0.015); // Deep electric midnight blue atmospheric fog
+    scene.fog = new THREE.FogExp2(0x061536, 0.015); // Electric Midnight Blue Atmospheric Fog
 
     const camera = new THREE.PerspectiveCamera(
       45,
@@ -49,34 +51,34 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMappingExposure = 1.25;
     renderer.setClearColor(0x020408, 1);
     container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // --- 2. LIGHTING (Cool Midnight Blue, Rich Teal & Shimmering Silver Starlight) ---
-    const ambientLight = new THREE.AmbientLight(0x38bdf8, 0.35);
+    // --- 2. LIGHTING (Deep Midnight Blues, Electric Teal & Silver Starlight) ---
+    const ambientLight = new THREE.AmbientLight(0x38bdf8, 0.4);
     scene.add(ambientLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 2.0);
-    keyLight.position.set(12, 20, 10);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.2);
+    keyLight.position.set(12, 22, 12);
     scene.add(keyLight);
 
-    const blueRimLight = new THREE.DirectionalLight(0x0d38e8, 3.2);
-    blueRimLight.position.set(-10, -5, -8);
+    const blueRimLight = new THREE.DirectionalLight(0x0d38e8, 3.5);
+    blueRimLight.position.set(-12, -6, -8);
     scene.add(blueRimLight);
 
-    const tealFillLight = new THREE.DirectionalLight(0x00f5ff, 1.6);
-    tealFillLight.position.set(0, -10, 5);
-    scene.add(tealFillLight);
+    const cyanUnderglow = new THREE.DirectionalLight(0x00f5ff, 1.8);
+    cyanUnderglow.position.set(0, -12, 6);
+    scene.add(cyanUnderglow);
 
-    const thrusterLight = new THREE.PointLight(0x00f5ff, 3.5, 18);
-    thrusterLight.position.set(0, -2.8, 0);
+    const thrusterLight = new THREE.PointLight(0x00f5ff, 4.0, 20);
+    thrusterLight.position.set(0, -3.2, 0);
     scene.add(thrusterLight);
     thrusterLightRef.current = thrusterLight;
 
     // --- 3. PROCEDURAL TEXTURES ---
-    // Volumetric cloud puff texture (Deep Royal Blue & Misty White)
+    // Volumetric cloud puff texture (Deep Royal Blue & Mist Cyan)
     const createCloudTexture = () => {
       const canvas = document.createElement('canvas');
       canvas.width = 256;
@@ -98,17 +100,17 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
       canvas.width = 1024;
       canvas.height = 512;
       const ctx = canvas.getContext('2d')!;
-      ctx.fillStyle = '#1e2533';
+      ctx.fillStyle = '#1b2230';
       ctx.fillRect(0, 0, 1024, 512);
 
       // Lunar Maria & Highland variations
-      for (let i = 0; i < 450; i++) {
+      for (let i = 0; i < 480; i++) {
         const x = Math.random() * 1024;
         const y = Math.random() * 512;
         const r = Math.random() * 50 + 5;
         const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
         const isLight = Math.random() < 0.45;
-        grad.addColorStop(0, isLight ? 'rgba(241, 245, 249, 0.28)' : 'rgba(8, 12, 22, 0.5)');
+        grad.addColorStop(0, isLight ? 'rgba(241, 245, 249, 0.3)' : 'rgba(6, 10, 20, 0.55)');
         grad.addColorStop(1, 'transparent');
         ctx.fillStyle = grad;
         ctx.beginPath();
@@ -117,116 +119,218 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
       }
 
       // High-contrast craters with sharp rim shadows
-      for (let i = 0; i < 110; i++) {
+      for (let i = 0; i < 120; i++) {
         const x = Math.random() * 1024;
         const y = Math.random() * 512;
         const r = Math.random() * 18 + 3;
         ctx.beginPath();
         ctx.arc(x, y, r, 0, Math.PI * 2);
-        ctx.fillStyle = '#060a12';
+        ctx.fillStyle = '#040812';
         ctx.fill();
         ctx.lineWidth = Math.max(1, r * 0.22);
-        ctx.strokeStyle = 'rgba(226, 232, 240, 0.75)';
+        ctx.strokeStyle = 'rgba(226, 232, 240, 0.8)';
         ctx.stroke();
       }
 
       return new THREE.CanvasTexture(canvas);
     };
 
-    // --- 4. SPACECRAFT / LANDER 3D MODEL (Aerospace Obsidian & Silver Chrome) ---
+    // --- 4. BRAND NEW 3D SPACECRAFT / LUNAR EXPLORATION VESSEL ---
     const rocketGroup = new THREE.Group();
     rocketGroupRef.current = rocketGroup;
 
-    // Fuselage / Command Module (Metallic Titanium Obsidian with Silver Polish)
-    const hullGeom = new THREE.ConeGeometry(0.85, 3.2, 32);
-    const hullMat = new THREE.MeshStandardMaterial({
-      color: 0x111622,
-      metalness: 0.9,
-      roughness: 0.18,
-      emissive: 0x061536,
-      emissiveIntensity: 0.25,
+    // Materials: Aerospace Silver Chrome, Carbon Obsidian, and Electric Cyan Emissive
+    const chromeMat = new THREE.MeshStandardMaterial({
+      color: 0xd8e2ec,
+      metalness: 0.95,
+      roughness: 0.12,
+      envMapIntensity: 1.5,
     });
-    const hullMesh = new THREE.Mesh(hullGeom, hullMat);
-    hullMesh.position.y = 0.6;
-    rocketGroup.add(hullMesh);
 
-    // Avionics / Cockpit Visor Strip (Brilliant Electric Cyan Glow)
-    const visorGeom = new THREE.CylinderGeometry(0.52, 0.68, 0.45, 32, 1, true, -Math.PI / 3, (2 * Math.PI) / 3);
-    const visorMat = new THREE.MeshBasicMaterial({
+    const carbonMat = new THREE.MeshStandardMaterial({
+      color: 0x080d18,
+      metalness: 0.88,
+      roughness: 0.28,
+      emissive: 0x040c1e,
+      emissiveIntensity: 0.3,
+    });
+
+    const cyanGlowMat = new THREE.MeshBasicMaterial({
       color: 0x00f5ff,
-      side: THREE.DoubleSide,
     });
-    const visorMesh = new THREE.Mesh(visorGeom, visorMat);
-    visorMesh.position.set(0, 1.1, 0.15);
-    visorMesh.rotation.y = Math.PI / 6;
-    rocketGroup.add(visorMesh);
 
-    // Service Module Base
-    const baseGeom = new THREE.CylinderGeometry(0.85, 0.95, 0.8, 32);
-    const baseMat = new THREE.MeshStandardMaterial({
-      color: 0x080e18,
-      metalness: 0.92,
-      roughness: 0.3,
+    const blueAccentMat = new THREE.MeshStandardMaterial({
+      color: 0x0d38e8,
+      metalness: 0.85,
+      roughness: 0.2,
+      emissive: 0x071e68,
+      emissiveIntensity: 0.4,
     });
-    const baseMesh = new THREE.Mesh(baseGeom, baseMat);
-    baseMesh.position.y = -1.1;
-    rocketGroup.add(baseMesh);
 
-    // Aerodynamic Stabilizer Fins (4 fins)
+    // 4.1 Sleek Aerodynamic Nose Cone (Titanium Chrome)
+    const noseGeom = new THREE.ConeGeometry(0.75, 2.4, 32);
+    const noseMesh = new THREE.Mesh(noseGeom, chromeMat);
+    noseMesh.position.y = 1.4;
+    rocketGroup.add(noseMesh);
+
+    // 4.2 Panoramic Holographic Cockpit Canopy (Glowing Cyan Viewport)
+    const canopyGeom = new THREE.CylinderGeometry(0.48, 0.62, 0.55, 32, 1, true, -Math.PI / 3, (2 * Math.PI) / 3);
+    const canopyMesh = new THREE.Mesh(canopyGeom, cyanGlowMat);
+    canopyMesh.position.set(0, 1.35, 0.14);
+    canopyMesh.rotation.y = Math.PI / 6;
+    rocketGroup.add(canopyMesh);
+
+    // 4.3 Center Fuselage Module (Faceted Carbon Armor with Blue Trim)
+    const bodyGeom = new THREE.CylinderGeometry(0.75, 0.9, 2.2, 32);
+    const bodyMesh = new THREE.Mesh(bodyGeom, carbonMat);
+    bodyMesh.position.y = -0.6;
+    rocketGroup.add(bodyMesh);
+
+    // Cyan LED Energy Conduits Running Down the Hull
     for (let i = 0; i < 4; i++) {
-      const finGeom = new THREE.BoxGeometry(0.08, 1.2, 0.85);
-      const finMat = new THREE.MeshStandardMaterial({
-        color: 0x0a2396,
-        metalness: 0.8,
-        roughness: 0.25,
-      });
-      const finMesh = new THREE.Mesh(finGeom, finMat);
+      const conduitGeom = new THREE.BoxGeometry(0.04, 2.0, 0.04);
+      const conduitMesh = new THREE.Mesh(conduitGeom, cyanGlowMat);
       const angle = (i * Math.PI) / 2;
-      finMesh.position.set(Math.cos(angle) * 0.95, -1.3, Math.sin(angle) * 0.95);
-      finMesh.rotation.y = -angle;
-      finMesh.rotation.z = Math.PI / 10;
-      rocketGroup.add(finMesh);
+      conduitMesh.position.set(Math.cos(angle) * 0.85, -0.6, Math.sin(angle) * 0.85);
+      rocketGroup.add(conduitMesh);
     }
 
-    // Rocket Thruster Engine Bell
-    const bellGeom = new THREE.CylinderGeometry(0.35, 0.65, 0.75, 24);
-    const bellMat = new THREE.MeshStandardMaterial({
-      color: 0x1a2233,
-      metalness: 0.95,
-      roughness: 0.1,
-    });
-    const bellMesh = new THREE.Mesh(bellGeom, bellMat);
-    bellMesh.position.y = -1.8;
-    rocketGroup.add(bellMesh);
+    // 4.4 Top Dorsal Communications Antenna / LiDAR Sensor Dish
+    const dishGeom = new THREE.SphereGeometry(0.28, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2);
+    const dishMesh = new THREE.Mesh(dishGeom, chromeMat);
+    dishMesh.position.set(0, 2.65, 0);
+    dishMesh.rotation.x = Math.PI / 4;
+    rocketGroup.add(dishMesh);
+    antennaDishRef.current = dishMesh;
 
-    // Thruster Exhaust Flame Cone (Electric Cyan & Ice-Blue Ion Plume)
-    const plumeGeom = new THREE.ConeGeometry(0.6, 2.6, 24, 1, true);
-    const plumeMat = new THREE.MeshBasicMaterial({
-      color: 0x00f5ff,
-      transparent: true,
-      opacity: 0.88,
-      side: THREE.DoubleSide,
-    });
-    const plumeMesh = new THREE.Mesh(plumeGeom, plumeMat);
-    plumeMesh.position.y = -3.2;
-    plumeMesh.rotation.x = Math.PI;
-    rocketGroup.add(plumeMesh);
-    thrusterPlumeRef.current = plumeMesh;
+    // 4.5 Dual Articulated Solar Array Wings / Radiator Panels (Left & Right)
+    for (const side of [-1, 1]) {
+      const wingGroup = new THREE.Group();
+      wingGroup.position.set(side * 0.85, -0.3, 0);
 
-    // Thruster Core (Diamond White Hot Plasma)
-    const coreGeom = new THREE.ConeGeometry(0.25, 1.8, 16);
-    const coreMat = new THREE.MeshBasicMaterial({
-      color: 0xffffff,
-      transparent: true,
-      opacity: 0.98,
-    });
-    const coreMesh = new THREE.Mesh(coreGeom, coreMat);
-    coreMesh.position.y = -2.7;
-    coreMesh.rotation.x = Math.PI;
-    rocketGroup.add(coreMesh);
+      // Wing Strut
+      const strutGeom = new THREE.BoxGeometry(0.7, 0.08, 0.12);
+      const strutMesh = new THREE.Mesh(strutGeom, blueAccentMat);
+      strutMesh.position.set(side * 0.35, 0, 0);
+      wingGroup.add(strutMesh);
 
+      // Solar Panel Blade
+      const panelGeom = new THREE.BoxGeometry(1.4, 0.03, 0.95);
+      const panelMesh = new THREE.Mesh(panelGeom, carbonMat);
+      panelMesh.position.set(side * 1.35, 0, 0);
+      wingGroup.add(panelMesh);
+
+      // Photovoltaic Cyan Cell Matrix Grid
+      const cellGeom = new THREE.BoxGeometry(1.3, 0.04, 0.85);
+      const cellMesh = new THREE.Mesh(cellGeom, cyanGlowMat);
+      cellMesh.position.set(side * 1.35, 0.01, 0);
+      wingGroup.add(cellMesh);
+
+      // Wingtip Navigation Beacon
+      const beaconGeom = new THREE.SphereGeometry(0.06, 8, 8);
+      const beaconMesh = new THREE.Mesh(beaconGeom, cyanGlowMat);
+      beaconMesh.position.set(side * 2.05, 0, 0);
+      wingGroup.add(beaconMesh);
+
+      rocketGroup.add(wingGroup);
+    }
+
+    // 4.6 Quad Lunar Landing Gear Struts with Shock Pistons & Footpads
+    for (let i = 0; i < 4; i++) {
+      const angle = (i * Math.PI) / 2 + Math.PI / 4;
+      const legGroup = new THREE.Group();
+      legGroup.position.set(Math.cos(angle) * 0.85, -1.5, Math.sin(angle) * 0.85);
+      legGroup.rotation.y = -angle;
+
+      // Diagonal Hydraulic Piston
+      const pistonGeom = new THREE.CylinderGeometry(0.045, 0.045, 1.4, 12);
+      const pistonMesh = new THREE.Mesh(pistonGeom, chromeMat);
+      pistonMesh.position.set(0.45, -0.4, 0);
+      pistonMesh.rotation.z = -Math.PI / 4;
+      legGroup.add(pistonMesh);
+
+      // Circular Articulated Footpad
+      const padGeom = new THREE.CylinderGeometry(0.2, 0.22, 0.06, 16);
+      const padMesh = new THREE.Mesh(padGeom, blueAccentMat);
+      padMesh.position.set(0.9, -0.9, 0);
+      legGroup.add(padMesh);
+
+      rocketGroup.add(legGroup);
+    }
+
+    // 4.7 Triple Ion Thruster Engine Array (1 Main Central + 2 Lateral Boosters)
+    const plumeGroup = new THREE.Group();
+    thrusterPlumeRef.current = plumeGroup;
+
+    const enginePositions = [
+      { x: 0, z: 0, r: 0.42, h: 0.75, plumeR: 0.65, plumeH: 2.8 },
+      { x: -0.45, z: 0, r: 0.25, h: 0.55, plumeR: 0.38, plumeH: 1.9 },
+      { x: 0.45, z: 0, r: 0.25, h: 0.55, plumeR: 0.38, plumeH: 1.9 },
+    ];
+
+    enginePositions.forEach((eng) => {
+      // Metallic Engine Nozzle Bell
+      const bellGeom = new THREE.CylinderGeometry(eng.r * 0.6, eng.r, eng.h, 24);
+      const bellMesh = new THREE.Mesh(bellGeom, chromeMat);
+      bellMesh.position.set(eng.x, -1.8, eng.z);
+      rocketGroup.add(bellMesh);
+
+      // Electric Cyan Ion Plasma Cone
+      const coneGeom = new THREE.ConeGeometry(eng.plumeR, eng.plumeH, 24, 1, true);
+      const coneMat = new THREE.MeshBasicMaterial({
+        color: 0x00f5ff,
+        transparent: true,
+        opacity: 0.85,
+        side: THREE.DoubleSide,
+      });
+      const coneMesh = new THREE.Mesh(coneGeom, coneMat);
+      coneMesh.position.set(eng.x, -1.8 - eng.plumeH / 2, eng.z);
+      coneMesh.rotation.x = Math.PI;
+      plumeGroup.add(coneMesh);
+
+      // Hot White Plasma Inner Core
+      const coreGeom = new THREE.ConeGeometry(eng.plumeR * 0.45, eng.plumeH * 0.65, 16);
+      const coreMat = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.95,
+      });
+      const coreMesh = new THREE.Mesh(coreGeom, coreMat);
+      coreMesh.position.set(eng.x, -1.8 - (eng.plumeH * 0.65) / 2, eng.z);
+      coreMesh.rotation.x = Math.PI;
+      plumeGroup.add(coreMesh);
+    });
+
+    rocketGroup.add(plumeGroup);
     rocketGroup.position.set(0, -0.6, 2.5);
     scene.add(rocketGroup);
+
+    // 4.8 Dynamic Trailing Engine Spark Particles
+    const sparkCount = 180;
+    const sparkGeom = new THREE.BufferGeometry();
+    const sparkPositions = new Float32Array(sparkCount * 3);
+    const sparkVelocities = new Float32Array(sparkCount * 3);
+
+    for (let i = 0; i < sparkCount; i++) {
+      sparkPositions[i * 3] = (Math.random() - 0.5) * 0.8;
+      sparkPositions[i * 3 + 1] = -2.2 - Math.random() * 4.0;
+      sparkPositions[i * 3 + 2] = (Math.random() - 0.5) * 0.8;
+
+      sparkVelocities[i * 3] = (Math.random() - 0.5) * 0.03;
+      sparkVelocities[i * 3 + 1] = -0.15 - Math.random() * 0.25;
+      sparkVelocities[i * 3 + 2] = (Math.random() - 0.5) * 0.03;
+    }
+    sparkGeom.setAttribute('position', new THREE.BufferAttribute(sparkPositions, 3));
+    const sparkMat = new THREE.PointsMaterial({
+      color: 0x00f5ff,
+      size: 0.35,
+      transparent: true,
+      opacity: 0.85,
+      blending: THREE.AdditiveBlending,
+    });
+    const sparksPoints = new THREE.Points(sparkGeom, sparkMat);
+    scene.add(sparksPoints);
+    sparksPointsRef.current = sparksPoints;
 
     // --- 5. PHASE 1: VOLUMETRIC MIDNIGHT BLUE & TEAL CLOUDS ---
     const cloudGroup = new THREE.Group();
@@ -407,6 +511,11 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
         rocketGroupRef.current.position.x = mouseRef.current.x * 0.35;
       }
 
+      // Antenna dish slow rotation
+      if (antennaDishRef.current) {
+        antennaDishRef.current.rotation.y = elapsedTime * 0.8;
+      }
+
       // Thruster flame flicker
       if (thrusterPlumeRef.current) {
         const pulse = 0.88 + Math.sin(elapsedTime * 35) * 0.22;
@@ -414,6 +523,21 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
       }
       if (thrusterLightRef.current) {
         thrusterLightRef.current.intensity = 3.0 + Math.sin(elapsedTime * 40) * 1.0;
+      }
+
+      // Engine spark particle simulation
+      if (sparksPointsRef.current) {
+        const positions = sparksPointsRef.current.geometry.attributes.position.array as Float32Array;
+        for (let i = 0; i < sparkCount; i++) {
+          positions[i * 3 + 1] += sparkVelocities[i * 3 + 1];
+          // Reset spark if it falls too low
+          if (positions[i * 3 + 1] < -8.0) {
+            positions[i * 3] = (Math.random() - 0.5) * 0.8;
+            positions[i * 3 + 1] = -2.0;
+            positions[i * 3 + 2] = (Math.random() - 0.5) * 0.8;
+          }
+        }
+        sparksPointsRef.current.geometry.attributes.position.needsUpdate = true;
       }
 
       // Moon subtle self-rotation
