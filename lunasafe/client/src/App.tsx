@@ -429,7 +429,7 @@ export const App: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Web Audio API Ambient Space Drone
+  // Web Audio API Ambient Space Hum
   const toggleAudio = () => {
     if (isMuted) {
       try {
@@ -437,11 +437,10 @@ export const App: React.FC = () => {
         const ctx = new AudioCtx();
         audioCtxRef.current = ctx;
 
-        // Low frequency space hum
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(55, ctx.currentTime); // A1 note
+        osc.frequency.setValueAtTime(55, ctx.currentTime);
         gain.gain.setValueAtTime(0.08, ctx.currentTime);
         osc.connect(gain);
         gain.connect(ctx.destination);
@@ -520,7 +519,6 @@ export const App: React.FC = () => {
     gsap.ticker.add(tick);
     gsap.ticker.lagSmoothing(0);
 
-    // GSAP ScrollTrigger timeline scrubbing from 0 to 1
     if (scrollContainerRef.current) {
       ScrollTrigger.create({
         trigger: scrollContainerRef.current,
@@ -531,7 +529,6 @@ export const App: React.FC = () => {
           const p = self.progress;
           setScrollProgress(p);
 
-          // Update current phase (1 to 5)
           if (p < 0.22) setCurrentPhase(1);
           else if (p < 0.48) setCurrentPhase(2);
           else if (p < 0.72) setCurrentPhase(3);
@@ -548,7 +545,6 @@ export const App: React.FC = () => {
     };
   }, []);
 
-  // Handle Target Region Selection
   const handleSelectRegion = (regionId: string) => {
     const reg = REGIONS[regionId];
     if (reg) {
@@ -557,7 +553,6 @@ export const App: React.FC = () => {
     }
   };
 
-  // Run Landing Risk Assessment
   const handleAnalyze = async () => {
     if (!selectedRegion) return;
     setIsAnalyzing(true);
@@ -629,7 +624,7 @@ export const App: React.FC = () => {
     : DEFAULT_QUICKMAP_URL;
 
   return (
-    <div className={`min-h-screen bg-[#030303] text-[#FFF0F5] font-sans relative select-none ${isCursorHover ? 'cursor-hover' : ''}`}>
+    <div className={`min-h-screen bg-[#020408] text-[#F1F5F9] font-sans relative select-none ${isCursorHover ? 'cursor-hover' : ''}`}>
       {/* Custom Awwwards Blended Cursor */}
       <div
         className="custom-cursor-dot"
@@ -644,7 +639,7 @@ export const App: React.FC = () => {
       <div className="film-grain-overlay" />
       <div className="atmospheric-vignette" />
 
-      {/* 3D WebGL Canvas Engine (R3F / Three.js) */}
+      {/* 3D WebGL Canvas Engine (Midnight Blue Sky & Starlight) */}
       <AtmosWebGLScene scrollProgress={scrollProgress} currentPhase={currentPhase} />
 
       {/* Telemetry Flight HUD Overlay */}
@@ -653,10 +648,10 @@ export const App: React.FC = () => {
       {/* Sound Toggle Button */}
       <button
         onClick={toggleAudio}
-        className="fixed bottom-6 left-6 z-40 bg-[#0a0206]/85 backdrop-blur-xl p-3 rounded-full border border-[#FF1493]/30 text-[#FFB6C1] hover:text-white transition-all hover:scale-110 shadow-[0_0_15px_rgba(255,20,147,0.3)]"
+        className="fixed bottom-6 left-6 z-40 bg-[#050D24]/85 backdrop-blur-xl p-3 rounded-full border border-[#00F5FF]/30 text-[#38BDF8] hover:text-white transition-all hover:scale-110 shadow-[0_0_15px_rgba(0,245,255,0.3)]"
         title={isMuted ? 'Enable Ambient Space Hum' : 'Mute Audio'}
       >
-        {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4 text-[#FF1493] animate-pulse" />}
+        {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4 text-[#00F5FF] animate-pulse" />}
       </button>
 
       {/* MASTER SCROLL SCRUBBING TRACK (500vh for Cinematic Pacing) */}
@@ -664,58 +659,49 @@ export const App: React.FC = () => {
         {/* Sticky Viewport Stage */}
         <div className="sticky top-0 h-screen flex items-center justify-center overflow-hidden px-6">
           
-          {/* PHASE 1 & 2: HERO ASCENT TYPOGRAPHY (Visible at p: 0.0 -> 0.35) */}
+          {/* PHASE 1 & 2: ATMOS HERO SCREEN (Matches uploaded screenshot perfectly) */}
           <div
-            className="flex flex-col items-center justify-center text-center max-w-4xl mx-auto transition-all duration-300 pointer-events-auto"
+            className="relative flex flex-col items-center justify-center text-center w-full max-w-5xl mx-auto transition-all duration-300 pointer-events-auto"
             style={{
               opacity: Math.max(0, 1 - scrollProgress * 3.2),
-              transform: `scale(${Math.max(0.75, 1 - scrollProgress * 0.35)}) translateY(${-scrollProgress * 90}px)`,
+              transform: `scale(${Math.max(0.8, 1 - scrollProgress * 0.3)}) translateY(${-scrollProgress * 90}px)`,
               filter: `blur(${scrollProgress * 22}px)`,
               pointerEvents: scrollProgress > 0.25 ? 'none' : 'auto',
             }}
           >
-            <div className="font-mono text-xs tracking-[0.35em] text-[#FFB6C1] uppercase mb-6 flex items-center gap-2 bg-[#1a030f]/70 px-4 py-1.5 rounded-full border border-[#FF1493]/30 backdrop-blur-md">
-              <Sparkles className="w-3.5 h-3.5 text-[#FF1493]" />
-              <span>Cinematic Trans-Lunar Ascent · Atmos by Leeroy Inspired</span>
+            {/* Rotating Circular Badge "THE SURREALIST FLIGHT EXPERIMENT" */}
+            <div className="absolute -top-12 sm:-top-8 right-4 sm:right-12 z-20 pointer-events-none">
+              <svg viewBox="0 0 100 100" className="w-28 h-28 sm:w-36 sm:h-36 rotating-badge opacity-90">
+                <path
+                  id="badgePath"
+                  d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0"
+                  fill="none"
+                />
+                <text fill="#FFFFFF" fontSize="8.2" fontFamily="Space Grotesk" fontWeight="600" letterSpacing="2.2">
+                  <textPath href="#badgePath">THE SURREALIST FLIGHT EXPERIMENT — </textPath>
+                </text>
+              </svg>
             </div>
 
-            <h1 className="fluid-hero-title font-black uppercase text-center flex flex-wrap justify-center gap-x-4 sm:gap-x-6 gap-y-1 mb-6">
-              <span className="split-line-mask">
-                <span className={`split-word-inner metallic-pink-title ${titleRevealed ? 'revealed' : ''}`} style={{ transitionDelay: '0.1s' }}>
-                  Ascent
-                </span>
-              </span>
-              <span className="split-line-mask">
-                <span className={`split-word-inner text-[#FFF0F5] ${titleRevealed ? 'revealed' : ''}`} style={{ transitionDelay: '0.22s' }}>
-                  To
-                </span>
-              </span>
-              <span className="split-line-mask">
-                <span className={`split-word-inner metallic-pink-title ${titleRevealed ? 'revealed' : ''}`} style={{ transitionDelay: '0.34s' }}>
-                  The
-                </span>
-              </span>
-              <span className="split-line-mask">
-                <span className={`split-word-inner metallic-pink-title ${titleRevealed ? 'revealed' : ''}`} style={{ transitionDelay: '0.46s' }}>
-                  Moon
-                </span>
-              </span>
+            {/* Massive Pure Serif Title: ATMOS */}
+            <h1 className="atmos-hero-title mb-8 select-none">
+              ATMOS
             </h1>
 
-            <p className="max-w-[620px] text-[#FFD1DC]/80 fluid-body leading-relaxed mb-10 font-sans">
-              Scroll down to propel through the cloud layer, breach atmosphere into the void of space, and enter lunar orbit lock to deploy the landing risk assessment matrix.
-            </p>
+            {/* Pill EXPLORE Button */}
+            <div className="flex items-center justify-center">
+              <MagneticButton
+                onClick={() => window.scrollTo({ top: window.innerHeight * 4.2, behavior: 'smooth' })}
+                childrenPrimary="EXPLORE"
+                childrenSecondary="ASCEND"
+                variant="pill"
+              />
+            </div>
 
-            <MagneticButton
-              onClick={() => window.scrollTo({ top: window.innerHeight * 4.2, behavior: 'smooth' })}
-              childrenPrimary="Initiate Orbital Insertion"
-              childrenSecondary="Jump to Moon Arrival"
-              icon={<ArrowDownRight className="w-4 h-4 text-[#FF1493]" />}
-            />
-
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 font-mono text-[11px] tracking-[0.25em] text-[#FFB6C1]/70 flex flex-col items-center gap-2">
+            {/* Subtle Scroll Prompt */}
+            <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 font-mono text-[11px] tracking-[0.25em] text-[#38BDF8]/80 flex flex-col items-center gap-2">
               <span>SCROLL TO ASCEND</span>
-              <span className="w-[1px] h-8 bg-gradient-to-b from-[#FF1493] to-transparent animate-pulse" />
+              <span className="w-[1px] h-7 bg-gradient-to-b from-[#00F5FF] to-transparent animate-pulse" />
             </div>
           </div>
 
@@ -729,15 +715,15 @@ export const App: React.FC = () => {
               transform: `translateY(${Math.sin(scrollProgress * Math.PI) * 20}px)`,
             }}
           >
-            <div className="bg-[#0a0206]/85 backdrop-blur-2xl border border-[#FF1493]/30 p-8 rounded-3xl shadow-[0_0_50px_rgba(255,20,147,0.25)] space-y-4">
-              <span className="px-3.5 py-1 rounded-full font-mono text-[10px] text-[#FF1493] bg-[#1a030f] border border-[#FF1493]/40 uppercase tracking-widest">
-                Trans-Lunar Injection · Cruising Velocity Mach 32.4
+            <div className="bg-[#050D24]/90 backdrop-blur-2xl border border-[#00F5FF]/30 p-8 rounded-3xl shadow-[0_0_50px_rgba(0,245,255,0.25)] space-y-4">
+              <span className="px-3.5 py-1 rounded-full font-mono text-[10px] text-[#00F5FF] bg-[#081B4B] border border-[#00F5FF]/40 uppercase tracking-widest">
+                Trans-Lunar Traversal · Velocity Mach 32.4
               </span>
               <h2 className="text-2xl sm:text-3xl font-extrabold font-heading text-white">
-                Deep Space Void Traversal
+                Deep Midnight Void Traversal
               </h2>
-              <p className="text-xs sm:text-sm text-[#FFD1DC]/75 leading-relaxed font-sans">
-                Navigating the vacuum between Earth and Moon. Multi-spectral sensors calibration underway. Preparing deceleration burn for lunar orbit insertion.
+              <p className="text-xs sm:text-sm text-[#E2E8F0]/80 leading-relaxed font-sans">
+                Navigating the vacuum between Earth and Moon under shimmering silver starlight. Multi-spectral sensors calibration underway. Preparing deceleration burn for lunar orbit insertion.
               </p>
             </div>
           </div>
@@ -751,14 +737,14 @@ export const App: React.FC = () => {
               pointerEvents: scrollProgress > 0.85 ? 'auto' : 'none',
             }}
           >
-            <div className="w-full max-w-5xl bg-[#0a0206]/92 backdrop-blur-2xl border border-[#FF1493]/40 rounded-3xl p-6 sm:p-8 shadow-[0_0_60px_rgba(255,20,147,0.35)] space-y-6">
+            <div className="w-full max-w-5xl bg-[#050D24]/95 backdrop-blur-2xl border border-[#00F5FF]/40 rounded-3xl p-6 sm:p-8 shadow-[0_0_60px_rgba(0,245,255,0.35)] space-y-6">
               
               {/* Header Bar */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#FF1493]/20 pb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#00F5FF]/20 pb-4">
                 <div>
-                  <div className="flex items-center gap-2 text-xs font-mono text-[#FFB6C1] uppercase tracking-wider font-bold">
-                    <Sparkles className="w-4 h-4 text-[#FF1493]" />
-                    <span>Phase 5: Orbital Insertion Complete · Hover Lock Active</span>
+                  <div className="flex items-center gap-2 text-xs font-mono text-[#38BDF8] uppercase tracking-wider font-bold">
+                    <Sparkles className="w-4 h-4 text-[#00F5FF]" />
+                    <span>Phase 5: Orbital Insertion Complete · Lunar Hover Lock</span>
                   </div>
                   <h3 className="text-xl sm:text-2xl font-extrabold text-white mt-1 font-heading">
                     Select Target Lunar Landing Vector
@@ -771,7 +757,8 @@ export const App: React.FC = () => {
                     disabled={isAnalyzing}
                     childrenPrimary={isAnalyzing ? 'Fusing Telemetry…' : `Scan ${surveyRadiusKm} km Area`}
                     childrenSecondary={isAnalyzing ? 'Processing AI Models…' : 'Execute Risk Analysis'}
-                    icon={<Zap className="w-4 h-4 text-[#FF1493]" />}
+                    icon={<Zap className="w-4 h-4 text-[#081B4B]" />}
+                    variant="pill"
                   />
                 </div>
               </div>
@@ -786,16 +773,16 @@ export const App: React.FC = () => {
                       onClick={() => handleSelectRegion(reg.id)}
                       className={`moon-option-card p-4 rounded-2xl border transition-all duration-300 cursor-pointer text-left space-y-2.5 relative group ${
                         isSelected
-                          ? 'bg-gradient-to-b from-[#1a030f] to-[#0a0206] border-[#FF1493] shadow-[0_0_25px_rgba(255,20,147,0.45)] scale-[1.02]'
-                          : 'bg-[#0e030a]/70 border-[#FF1493]/20 hover:border-[#FF1493]/60 hover:bg-[#15040f]'
+                          ? 'bg-gradient-to-b from-[#081B4B] to-[#030A1D] border-[#00F5FF] shadow-[0_0_25px_rgba(0,245,255,0.45)] scale-[1.02]'
+                          : 'bg-[#060E22]/80 border-[#00F5FF]/20 hover:border-[#00F5FF]/60 hover:bg-[#0B1D47]'
                       }`}
                     >
                       <div className="flex items-center justify-between font-mono text-[10px]">
-                        <span className={isSelected ? 'text-[#FF1493] font-bold' : 'text-[#FFB6C1]/60'}>
+                        <span className={isSelected ? 'text-[#00F5FF] font-bold' : 'text-[#94A3B8]'}>
                           {reg.id === 'cy3' ? 'TARGET A' : reg.id === 'sp' ? 'TARGET B' : reg.id === 'malapert' ? 'TARGET C' : 'TARGET D'}
                         </span>
                         <span className={`px-2 py-0.5 rounded font-bold ${
-                          reg.id === 'tir' ? 'bg-rose-950 text-rose-300 border border-rose-600' : 'bg-[#FF1493]/20 text-[#FFB6C1] border border-[#FF1493]/40'
+                          reg.id === 'tir' ? 'bg-rose-950 text-rose-300 border border-rose-600' : 'bg-[#00F5FF]/20 text-[#38BDF8] border border-[#00F5FF]/40'
                         }`}>
                           {reg.mostSafeDetails.score}
                         </span>
@@ -803,16 +790,16 @@ export const App: React.FC = () => {
 
                       <div>
                         <h4 className="font-extrabold text-sm text-white font-heading">{reg.name}</h4>
-                        <p className="text-[11px] text-[#FFB6C1]/70 font-mono mt-0.5">{reg.coords}</p>
+                        <p className="text-[11px] text-[#94A3B8] font-mono mt-0.5">{reg.coords}</p>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-1 font-mono text-[9px] bg-black/60 p-2 rounded-lg border border-[#FF1493]/15">
+                      <div className="grid grid-cols-2 gap-1 font-mono text-[9px] bg-black/60 p-2 rounded-lg border border-[#00F5FF]/15">
                         <div>
-                          <span className="text-[#FFB6C1]/50 block">SLOPE</span>
+                          <span className="text-[#94A3B8] block">SLOPE</span>
                           <span className="text-white font-bold">{reg.slope}</span>
                         </div>
                         <div>
-                          <span className="text-[#FFB6C1]/50 block">HAZARD</span>
+                          <span className="text-[#94A3B8] block">HAZARD</span>
                           <span className="text-white font-bold">{reg.hazard}</span>
                         </div>
                       </div>
@@ -822,11 +809,11 @@ export const App: React.FC = () => {
               </div>
 
               {/* Survey Radius Slider */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-black/50 p-3.5 rounded-2xl border border-[#FF1493]/20">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-black/60 p-3.5 rounded-2xl border border-[#00F5FF]/20">
                 <div className="flex items-center gap-3">
-                  <Compass className="w-4 h-4 text-[#FF1493]" />
-                  <span className="text-xs font-mono text-[#FFB6C1]">Regional Survey Radius:</span>
-                  <span className="text-sm font-bold font-mono text-white">{surveyRadiusKm} km</span>
+                  <Compass className="w-4 h-4 text-[#00F5FF]" />
+                  <span className="text-xs font-mono text-[#E2E8F0]">Regional Survey Radius:</span>
+                  <span className="text-sm font-bold font-mono text-[#00F5FF]">{surveyRadiusKm} km</span>
                 </div>
                 <input
                   type="range"
@@ -835,14 +822,14 @@ export const App: React.FC = () => {
                   step="25"
                   value={surveyRadiusKm}
                   onChange={(e) => setSurveyRadiusKm(parseInt(e.target.value))}
-                  className="w-full sm:w-64 accent-[#FF1493] cursor-pointer"
+                  className="w-full sm:w-64 accent-[#00F5FF] cursor-pointer"
                 />
               </div>
 
               {/* Loading Status Progress Bar */}
               {isAnalyzing && (
-                <div className="p-3 bg-[#1a030f]/90 rounded-xl border border-[#FF1493]/50 text-xs font-mono text-[#FFB6C1] flex items-center gap-3">
-                  <div className="w-4 h-4 rounded-full border-2 border-[#FF1493] border-t-transparent animate-spin" />
+                <div className="p-3 bg-[#081B4B]/90 rounded-xl border border-[#00F5FF]/50 text-xs font-mono text-[#38BDF8] flex items-center gap-3">
+                  <div className="w-4 h-4 rounded-full border-2 border-[#00F5FF] border-t-transparent animate-spin" />
                   <span>{loadingText}</span>
                 </div>
               )}
@@ -863,27 +850,27 @@ export const App: React.FC = () => {
           <div className="space-y-8">
             {/* Results Title */}
             <div className="text-center space-y-2">
-              <div className="font-mono text-xs tracking-[0.3em] text-[#FFB6C1] uppercase">
+              <div className="font-mono text-xs tracking-[0.3em] text-[#38BDF8] uppercase">
                 {surveyRadiusKm} km Radius Mission Analysis
               </div>
               <h2 className="text-3xl sm:text-5xl font-extrabold font-heading tracking-tight text-white">
                 {selectedRegion.name}
               </h2>
-              <div className="font-mono text-xs text-[#FF1493]">{selectedRegion.coords}</div>
+              <div className="font-mono text-xs text-[#00F5FF]">{selectedRegion.coords}</div>
             </div>
 
             {/* DEDICATED "WHY IS IT SAFE?" 5-PILLAR ASSESSMENT CARD */}
-            <div className="bg-gradient-to-b from-[#1a030f] via-[#0c0408] to-[#040103] border-2 border-[#FF1493]/70 rounded-3xl p-7 sm:p-8 shadow-[0_0_45px_rgba(255,20,147,0.25)] space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#FF1493]/30 pb-4">
+            <div className="bg-gradient-to-b from-[#081B4B] via-[#050D24] to-[#020614] border-2 border-[#00F5FF]/70 rounded-3xl p-7 sm:p-8 shadow-[0_0_45px_rgba(0,245,255,0.25)] space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#00F5FF]/30 pb-4">
                 <div>
-                  <div className="flex items-center gap-2 text-[#FF69B4] font-bold text-sm tracking-wide font-mono">
-                    <CheckCircle2 className="w-5 h-5 text-[#FF1493]" />
+                  <div className="flex items-center gap-2 text-[#38BDF8] font-bold text-sm tracking-wide font-mono">
+                    <CheckCircle2 className="w-5 h-5 text-[#00F5FF]" />
                     <span>PRIMARY OPTIMAL TOUCHDOWN SITE · GO EVALUATION</span>
                   </div>
                   <h3 className="text-xl font-extrabold text-white mt-1 font-heading">{selectedRegion.mostSafeDetails.name}</h3>
                 </div>
                 <div>
-                  <span className="px-4 py-1.5 bg-[#FF1493] text-white font-extrabold text-xs rounded-full font-mono shadow-[0_0_16px_rgba(255,20,147,0.85)]">
+                  <span className="px-4 py-1.5 bg-[#00F5FF] text-black font-extrabold text-xs rounded-full font-mono shadow-[0_0_16px_rgba(0,245,255,0.85)]">
                     CONFIDENCE: {selectedRegion.mostSafeDetails.score}
                   </span>
                 </div>
@@ -891,15 +878,15 @@ export const App: React.FC = () => {
 
               {/* 5 Structural Pillars */}
               <div>
-                <div className="text-xs font-mono text-[#FFB6C1] uppercase tracking-wider font-bold mb-3 flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-[#FF1493]" />
+                <div className="text-xs font-mono text-[#E2E8F0] uppercase tracking-wider font-bold mb-3 flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-[#00F5FF]" />
                   <span>Why is this site safe? — Engineering Safety Justification:</span>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 font-sans text-xs">
-                  <div className="bg-[#0e0308] p-3.5 rounded-xl border border-[#FF1493]/25 space-y-1">
-                    <div className="font-bold text-[#FFB6C1] flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-[#FF1493]" />
+                  <div className="bg-[#040A1A] p-3.5 rounded-xl border border-[#00F5FF]/25 space-y-1">
+                    <div className="font-bold text-[#38BDF8] flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-[#00F5FF]" />
                       <span>Tipping Safety ({selectedRegion.mostSafeDetails.slope})</span>
                     </div>
                     <div className="text-slate-300 leading-relaxed">
@@ -907,9 +894,9 @@ export const App: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="bg-[#0e0308] p-3.5 rounded-xl border border-[#FF1493]/25 space-y-1">
-                    <div className="font-bold text-[#FFB6C1] flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-[#FF1493]" />
+                  <div className="bg-[#040A1A] p-3.5 rounded-xl border border-[#00F5FF]/25 space-y-1">
+                    <div className="font-bold text-[#38BDF8] flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-[#00F5FF]" />
                       <span>Low Hazard Density ({selectedRegion.mostSafeDetails.hazard})</span>
                     </div>
                     <div className="text-slate-300 leading-relaxed">
@@ -917,9 +904,9 @@ export const App: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="bg-[#0e0308] p-3.5 rounded-xl border border-[#FF1493]/25 space-y-1">
-                    <div className="font-bold text-[#FFB6C1] flex items-center gap-1.5">
-                      <Sun className="w-3.5 h-3.5 text-[#FF69B4]" />
+                  <div className="bg-[#040A1A] p-3.5 rounded-xl border border-[#00F5FF]/25 space-y-1">
+                    <div className="font-bold text-[#38BDF8] flex items-center gap-1.5">
+                      <Sun className="w-3.5 h-3.5 text-[#38BDF8]" />
                       <span>Thermal & Illumination Envelope</span>
                     </div>
                     <div className="text-slate-300 leading-relaxed">
@@ -927,9 +914,9 @@ export const App: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="bg-[#0e0308] p-3.5 rounded-xl border border-[#FF1493]/25 space-y-1">
-                    <div className="font-bold text-[#FFB6C1] flex items-center gap-1.5">
-                      <Radio className="w-3.5 h-3.5 text-[#FFB6C1]" />
+                  <div className="bg-[#040A1A] p-3.5 rounded-xl border border-[#00F5FF]/25 space-y-1">
+                    <div className="font-bold text-[#38BDF8] flex items-center gap-1.5">
+                      <Radio className="w-3.5 h-3.5 text-[#38BDF8]" />
                       <span>Direct Comms Line-of-Sight</span>
                     </div>
                     <div className="text-slate-300 leading-relaxed">
@@ -937,9 +924,9 @@ export const App: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="bg-[#0e0308] p-3.5 rounded-xl border border-[#FF1493]/25 space-y-1 md:col-span-2">
-                    <div className="font-bold text-[#FFB6C1] flex items-center gap-1.5">
-                      <Activity className="w-3.5 h-3.5 text-[#FF1493]" />
+                  <div className="bg-[#040A1A] p-3.5 rounded-xl border border-[#00F5FF]/25 space-y-1 md:col-span-2">
+                    <div className="font-bold text-[#38BDF8] flex items-center gap-1.5">
+                      <Activity className="w-3.5 h-3.5 text-[#00F5FF]" />
                       <span>Multi-Sensor Modality Consensus</span>
                     </div>
                     <div className="text-slate-300 leading-relaxed">
@@ -950,52 +937,52 @@ export const App: React.FC = () => {
               </div>
 
               {/* YOLOv8 Optical Obstacle Analytics */}
-              <div className="bg-[#12040a] p-4 rounded-xl border border-[#FF1493]/35 space-y-3">
+              <div className="bg-[#040E24] p-4 rounded-xl border border-[#00F5FF]/35 space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="font-mono text-xs font-bold text-[#FFB6C1] uppercase tracking-wider flex items-center gap-2">
-                    <Crosshair className="w-4 h-4 text-[#FF1493]" />
+                  <div className="font-mono text-xs font-bold text-[#38BDF8] uppercase tracking-wider flex items-center gap-2">
+                    <Crosshair className="w-4 h-4 text-[#00F5FF]" />
                     <span>YOLOv8 Optical Perception Analytics (Craters & Rock Boulders)</span>
                   </div>
-                  <span className="text-[10px] font-mono text-[#FFB6C1] bg-[#38061e] px-2.5 py-0.5 rounded border border-[#FF1493]/40">
+                  <span className="text-[10px] font-mono text-[#00F5FF] bg-[#081B4B] px-2.5 py-0.5 rounded border border-[#00F5FF]/40">
                     Sub-meter Fine Sweep AI
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs">
-                  <div className="bg-black/70 p-3 rounded-lg border border-[#FF1493]/20">
-                    <span className="text-[#FFB6C1]/70 text-[10px] block">🕳️ CRATER DETECTION DENSITY</span>
+                  <div className="bg-black/70 p-3 rounded-lg border border-[#00F5FF]/20">
+                    <span className="text-[#94A3B8] text-[10px] block">🕳️ CRATER DETECTION DENSITY</span>
                     <span className="font-bold text-white mt-1 block text-[11px]">{selectedRegion.mostSafeDetails.craters}</span>
                   </div>
-                  <div className="bg-black/70 p-3 rounded-lg border border-[#FF1493]/20">
-                    <span className="text-[#FFB6C1]/70 text-[10px] block">🪨 BOULDER & ROCK CLUSTERS</span>
+                  <div className="bg-black/70 p-3 rounded-lg border border-[#00F5FF]/20">
+                    <span className="text-[#94A3B8] text-[10px] block">🪨 BOULDER & ROCK CLUSTERS</span>
                     <span className="font-bold text-white mt-1 block text-[11px]">{selectedRegion.mostSafeDetails.boulders}</span>
                   </div>
-                  <div className="bg-black/70 p-3 rounded-lg border border-[#FF1493]/20">
-                    <span className="text-[#FFB6C1]/70 text-[10px] block">🛡️ CLEAR REGOLITH RATIO</span>
-                    <span className="font-bold text-[#FF69B4] mt-1 block text-[11px]">{selectedRegion.mostSafeDetails.clearance}</span>
+                  <div className="bg-black/70 p-3 rounded-lg border border-[#00F5FF]/20">
+                    <span className="text-[#94A3B8] text-[10px] block">🛡️ CLEAR REGOLITH RATIO</span>
+                    <span className="font-bold text-[#00F5FF] mt-1 block text-[11px]">{selectedRegion.mostSafeDetails.clearance}</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* PURE LUNAR TACTICAL GIS MAP WITH GREEN & RED PIN POINTS */}
-            <div className="bg-[#080205]/90 border border-[#FF1493]/30 rounded-3xl p-6 space-y-5 shadow-2xl">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#FF1493]/20 pb-4">
+            <div className="bg-[#050D24]/90 border border-[#00F5FF]/30 rounded-3xl p-6 space-y-5 shadow-2xl">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#00F5FF]/20 pb-4">
                 <div>
                   <div className="font-mono text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                    <Compass className="w-4 h-4 text-[#FF1493]" />
+                    <Compass className="w-4 h-4 text-[#00F5FF]" />
                     <span>Lunar Tactical GIS Map · Safe (Green) & Risky (Red) Pins</span>
                   </div>
-                  <div className="text-xs text-[#FFB6C1]/70 font-mono mt-0.5">
-                    Center: <span className="text-[#FF1493] font-bold">{selectedRegion.coords}</span> · Survey Area: {surveyRadiusKm} km Radius
+                  <div className="text-xs text-[#94A3B8] font-mono mt-0.5">
+                    Center: <span className="text-[#00F5FF] font-bold">{selectedRegion.coords}</span> · Survey Area: {surveyRadiusKm} km Radius
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1.5 bg-[#030303] p-1 rounded-lg border border-[#FF1493]/25 font-mono text-xs">
+                <div className="flex items-center gap-1.5 bg-[#020408] p-1 rounded-lg border border-[#00F5FF]/25 font-mono text-xs">
                   <button
                     onClick={() => setZoomLayerMode('leaflet')}
                     className={`px-3 py-1.5 rounded flex items-center gap-1.5 transition-all ${
-                      zoomLayerMode === 'leaflet' ? 'bg-[#FF1493] text-white font-bold shadow' : 'text-[#FFB6C1]/70 hover:text-white'
+                      zoomLayerMode === 'leaflet' ? 'bg-[#00F5FF] text-black font-bold shadow' : 'text-[#94A3B8] hover:text-white'
                     }`}
                   >
                     <MapPin className="w-3.5 h-3.5" />
@@ -1004,7 +991,7 @@ export const App: React.FC = () => {
                   <button
                     onClick={() => setZoomLayerMode('quickmap_embed')}
                     className={`px-3 py-1.5 rounded flex items-center gap-1.5 transition-all ${
-                      zoomLayerMode === 'quickmap_embed' ? 'bg-[#FF1493] text-white font-bold shadow' : 'text-[#FFB6C1]/70 hover:text-white'
+                      zoomLayerMode === 'quickmap_embed' ? 'bg-[#00F5FF] text-black font-bold shadow' : 'text-[#94A3B8] hover:text-white'
                     }`}
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
@@ -1014,18 +1001,18 @@ export const App: React.FC = () => {
               </div>
 
               {/* Pin Points Map Viewport */}
-              <div className="relative w-full h-[500px] rounded-2xl overflow-hidden border border-[#FF1493]/30 bg-[#020102] shadow-2xl">
+              <div className="relative w-full h-[500px] rounded-2xl overflow-hidden border border-[#00F5FF]/30 bg-[#020408] shadow-2xl">
                 {zoomLayerMode === 'leaflet' ? (
-                  <div className="relative w-full h-full bg-[#020102] flex items-center justify-center overflow-hidden">
-                    <div className="absolute inset-0 bg-[radial-gradient(#38061e_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none" />
+                  <div className="relative w-full h-full bg-[#020408] flex items-center justify-center overflow-hidden">
+                    <div className="absolute inset-0 bg-[radial-gradient(#081b4b_1px,transparent_1px)] [background-size:24px_24px] opacity-50 pointer-events-none" />
 
                     {/* Concentric Radar Range Rings */}
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                      <div className="w-[82%] h-[82%] rounded-full border border-[#FF1493]/50 border-dashed animate-[spin_120s_linear_infinite]" />
-                      <div className="w-[58%] h-[58%] rounded-full border border-[#FF69B4]/30 border-dashed" />
-                      <div className="w-[32%] h-[32%] rounded-full border border-[#FFB6C1]/20" />
-                      <div className="absolute w-full h-[1px] bg-[#FF1493]/20" />
-                      <div className="absolute h-full w-[1px] bg-[#FF1493]/20" />
+                      <div className="w-[82%] h-[82%] rounded-full border border-[#00F5FF]/50 border-dashed animate-[spin_120s_linear_infinite]" />
+                      <div className="w-[58%] h-[58%] rounded-full border border-[#38BDF8]/30 border-dashed" />
+                      <div className="w-[32%] h-[32%] rounded-full border border-[#E2E8F0]/20" />
+                      <div className="absolute w-full h-[1px] bg-[#00F5FF]/20" />
+                      <div className="absolute h-full w-[1px] bg-[#00F5FF]/20" />
                     </div>
 
                     {/* Safe & Risky Pins */}
@@ -1047,7 +1034,7 @@ export const App: React.FC = () => {
                             <div className={`w-6 h-6 rounded-full flex items-center justify-center border-2 shadow-lg transition-transform group-hover:scale-125 ${
                               pt.isSafe
                                 ? 'bg-emerald-500/30 border-emerald-400 shadow-[0_0_15px_#10B981]'
-                                : 'bg-rose-500/30 border-rose-400 shadow-[0_0_15px_#F43F5E]'
+                                : 'bg-rose-500/30 border-rose-400 shadow-[0_0_15px_#EF4444]'
                             }`}>
                               <div className={`w-2.5 h-2.5 rounded-full ${pt.isSafe ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'}`} />
                             </div>
@@ -1064,9 +1051,9 @@ export const App: React.FC = () => {
                           {isActive && (
                             <div
                               onClick={(e) => e.stopPropagation()}
-                              className="absolute bottom-10 left-1/2 -translate-x-1/2 w-64 bg-[#0a0206]/95 border border-[#FF1493]/50 rounded-xl p-3.5 shadow-2xl backdrop-blur-xl z-30 space-y-2 text-xs"
+                              className="absolute bottom-10 left-1/2 -translate-x-1/2 w-64 bg-[#050D24]/95 border border-[#00F5FF]/50 rounded-xl p-3.5 shadow-2xl backdrop-blur-xl z-30 space-y-2 text-xs"
                             >
-                              <div className="flex items-center justify-between border-b border-[#FF1493]/30 pb-1.5 font-mono">
+                              <div className="flex items-center justify-between border-b border-[#00F5FF]/30 pb-1.5 font-mono">
                                 <span className={pt.isSafe ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold'}>
                                   {pt.status === 'SAFE' ? '🟢 OPTIMAL TOUCHDOWN' : '🔴 CRITICAL HAZARD'}
                                 </span>
@@ -1095,10 +1082,10 @@ export const App: React.FC = () => {
             </div>
 
             {/* Action Bar: Confirm Touchdown Vector & Reset */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-[#FF1493]/20">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-[#00F5FF]/20">
               <button
                 onClick={resetAll}
-                className="px-6 py-3 rounded-full border border-[#FF1493]/30 hover:border-[#FF1493] text-[#FFB6C1] text-xs font-mono flex items-center gap-2 transition-all hover:bg-[#1a030f]"
+                className="px-6 py-3 rounded-full border border-[#00F5FF]/30 hover:border-[#00F5FF] text-[#38BDF8] text-xs font-mono flex items-center gap-2 transition-all hover:bg-[#050D24]"
               >
                 <RotateCcw className="w-4 h-4" />
                 <span>Restart Atmospheric Ascent</span>
@@ -1115,7 +1102,8 @@ export const App: React.FC = () => {
                     onClick={handleConfirmDecision}
                     childrenPrimary={`Lock Touchdown Vector: ${selectedRegion.name}`}
                     childrenSecondary="Transmit Guidance Coordinates"
-                    icon={<Check className="w-4 h-4 text-white" />}
+                    icon={<Check className="w-4 h-4 text-black" />}
+                    variant="pill"
                   />
                 )}
               </div>
@@ -1125,7 +1113,7 @@ export const App: React.FC = () => {
       </section>
 
       {/* Atmospheric Footer */}
-      <footer className="relative z-10 py-12 px-6 border-t border-[#FF1493]/15 text-center font-mono text-xs text-[#FFB6C1]/50 space-y-2">
+      <footer className="relative z-10 py-12 px-6 border-t border-[#00F5FF]/15 text-center font-mono text-xs text-[#94A3B8]/60 space-y-2">
         <div>ATMOS LUNAR MISSION COMMAND · SCROLL-DRIVEN TRANSLUNAR JOURNEY</div>
         <div>Engineered with Three.js WebGL · GSAP ScrollTrigger · Lenis Smooth Scroll · NASA Multi-Sensor Telemetry</div>
       </footer>

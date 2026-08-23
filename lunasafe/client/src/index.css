@@ -3,54 +3,57 @@
 @tailwind utilities;
 
 :root {
-  --void: #030303;
-  --void-deep: #010101;
-  --void-surface: #080808;
-  --void-card: rgba(12, 7, 10, 0.82);
-  --pink-neon: #FF1493;
-  --pink-hot: #FF69B4;
-  --pink-pastel: #FFB6C1;
-  --pink-light: #FFD1DC;
-  --pink-blush: #FFF0F5;
-  --pink-deep: #1a030f;
-  --pink-dark: #38061e;
-  --pink-border: rgba(255, 182, 193, 0.18);
-  --pink-glow: rgba(255, 20, 147, 0.45);
-  --safe: #FF69B4;
-  --safe-glow: rgba(255, 105, 180, 0.55);
-  --hazard: #FF1493;
-  --warn: #FFB6C1;
-  --font-display: 'Cinzel', 'Syne', Georgia, serif;
-  --font-heading: 'Syne', 'Plus Jakarta Sans', sans-serif;
+  --void: #020408;
+  --void-deep: #010204;
+  --void-surface: #050914;
+  --void-card: rgba(8, 17, 36, 0.82);
+  --atmos-blue: #0D38E8;
+  --atmos-royal: #0A2396;
+  --atmos-midnight: #081B4B;
+  --atmos-cyan: #00F5FF;
+  --atmos-sky: #38BDF8;
+  --atmos-teal: #06B6D4;
+  --atmos-silver: #E2E8F0;
+  --atmos-mist: #F1F5F9;
+  --atmos-border: rgba(56, 189, 248, 0.22);
+  --atmos-glow: rgba(0, 245, 255, 0.45);
+  
+  --font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  --font-display: 'Cormorant Garamond', 'Cinzel', serif;
+  --font-space: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+  --font-heading: 'Space Grotesk', 'Syne', sans-serif;
   --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
 }
 
 html {
-  background: #030303;
-  color: var(--pink-blush);
+  background: #020408;
+  color: var(--atmos-mist);
   font-family: var(--font-sans);
   overflow-x: hidden;
 }
 
 body {
   background: var(--void);
-  color: var(--pink-blush);
+  color: var(--atmos-mist);
   font-family: var(--font-sans);
   overflow-x: hidden;
   cursor: none;
 }
 
-/* Fluid Typography */
-.fluid-hero-title {
-  font-family: var(--font-display);
-  font-size: clamp(2.75rem, 7.5vw, 6.75rem);
-  line-height: 0.95;
-  letter-spacing: -0.025em;
+/* ATMOS Display Typography */
+.atmos-hero-title {
+  font-family: var(--font-serif);
+  font-size: clamp(3.5rem, 13vw, 11rem);
+  font-weight: 300;
+  line-height: 0.88;
+  letter-spacing: -0.02em;
+  color: #FFFFFF;
+  text-shadow: 0 0 45px rgba(255, 255, 255, 0.35);
 }
 
 .fluid-sub-title {
-  font-family: var(--font-heading);
+  font-family: var(--font-space);
   font-size: clamp(1.25rem, 2.5vw, 2.25rem);
   line-height: 1.2;
   letter-spacing: -0.015em;
@@ -61,31 +64,141 @@ body {
   line-height: 1.65;
 }
 
-/* Metallic Chromatic Pink Title Shine */
-@keyframes pinkShine {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 250% 50%; }
+/* Rotating Circular Text Badge */
+@keyframes spinBadge {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-.metallic-pink-title {
-  font-family: var(--font-display);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  background: linear-gradient(
-    115deg,
-    #FFB6C1 0%,
-    #FFF0F5 22%,
-    #FF1493 42%,
-    #FFD1DC 60%,
-    #FF69B4 78%,
-    #FFF0F5 100%
+.rotating-badge {
+  animation: spinBadge 24s linear infinite;
+  transform-origin: center center;
+}
+
+/* Atmospheric Film Grain / Noise Overlay */
+.film-grain-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  opacity: 0.055;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+}
+
+/* Atmospheric Blue Sky Haze Vignette */
+.atmospheric-vignette {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(
+    circle at 50% 30%,
+    rgba(13, 56, 232, 0.15) 0%,
+    rgba(2, 4, 8, 0.4) 55%,
+    rgba(1, 2, 4, 0.95) 100%
   );
-  background-size: 250% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: pinkShine 8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
-  filter: drop-shadow(0 0 45px rgba(255, 20, 147, 0.4));
+}
+
+/* Custom Awwwards Blended Cursor */
+.custom-cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 7px;
+  height: 7px;
+  background: #00F5FF;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: difference;
+  transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1), height 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.custom-cursor-aura {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(0, 245, 255, 0.55);
+  background: radial-gradient(circle, rgba(0, 245, 255, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+  will-change: transform;
+}
+
+body.cursor-hover .custom-cursor-aura {
+  width: 68px;
+  height: 68px;
+  border-color: rgba(0, 245, 255, 0.9);
+  background: radial-gradient(circle, rgba(0, 245, 255, 0.28) 0%, transparent 70%);
+}
+
+body.cursor-hover .custom-cursor-dot {
+  width: 11px;
+  height: 11px;
+  background: #FFFFFF;
+}
+
+/* Magnetic Button Base */
+.magnetic-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 34px;
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: #FFFFFF;
+  color: #081B4B;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.45);
+  transition: box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.magnetic-btn:hover {
+  background: #00F5FF;
+  color: #020408;
+  border-color: #00F5FF;
+  box-shadow: 0 0 45px rgba(0, 245, 255, 0.75);
+}
+
+/* Dual-Track Text Reveal Inside Buttons */
+.btn-text-track {
+  position: relative;
+  overflow: hidden;
+  height: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.btn-text-primary,
+.btn-text-secondary {
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.magnetic-btn:hover .btn-text-primary {
+  transform: translateY(-16px);
+}
+
+.magnetic-btn:hover .btn-text-secondary {
+  transform: translateY(-16px);
 }
 
 /* SplitText Mask Container */
@@ -108,219 +221,34 @@ body {
   opacity: 1;
 }
 
-/* Film Grain / Noise Overlay */
-.film-grain-overlay {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 999;
-  opacity: 0.045;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-  background-repeat: repeat;
-  mix-blend-mode: overlay;
+/* Leaflet Custom Pin Markers */
+.custom-leaflet-marker {
+  background: transparent;
+  border: none;
 }
 
-/* Dark Atmospheric Vignette */
-.atmospheric-vignette {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  background: radial-gradient(
-    circle at 50% 45%,
-    rgba(255, 20, 147, 0.035) 0%,
-    rgba(3, 3, 3, 0.4) 50%,
-    rgba(1, 1, 1, 0.92) 100%
-  );
-}
-
-/* Lunar Moon Sphere Styling */
-.pink-lunar-disc {
-  position: relative;
+.marker-pin-safe {
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  box-shadow: 
-    0 0 120px rgba(255, 20, 147, 0.45),
-    0 0 60px rgba(255, 105, 180, 0.3),
-    0 0 20px rgba(255, 240, 245, 0.2);
-  will-change: transform, filter;
-  transition: box-shadow 0.5s ease;
+  background: #10B981;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 0 16px #10B981, 0 0 30px #10B981;
+  animation: radarPing 2.5s infinite;
 }
 
-.pink-lunar-disc img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.marker-pin-risky {
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  pointer-events: none;
-  filter: contrast(1.2) brightness(1.08) drop-shadow(0 0 35px rgba(255, 20, 147, 0.35));
-  display: block;
+  background: #EF4444;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 0 16px #EF4444, 0 0 30px #EF4444;
+  animation: radarPing 2.5s infinite;
 }
 
-/* Interactive Landing Pins */
-.lunar-pin {
-  transform: translate(-50%, -100%);
-  background: rgba(12, 6, 10, 0.92);
-  border: 1px solid rgba(255, 182, 193, 0.28);
-  color: #FFF0F5;
-  font-family: var(--font-sans);
-  font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  padding: 6px 14px;
-  border-radius: 24px;
-  backdrop-filter: blur(16px);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 30;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.85);
-}
-
-.lunar-pin::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: -13px;
-  transform: translateX(-50%);
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--pink-neon);
-  box-shadow: 0 0 14px var(--pink-neon), 0 0 6px #FFF;
-}
-
-.lunar-pin:hover {
-  border-color: var(--pink-hot);
-  transform: translate(-50%, -108%) scale(1.06);
-  box-shadow: 0 0 24px rgba(255, 20, 147, 0.65);
-  color: #FFFFFF;
-}
-
-.lunar-pin.active {
-  border-color: var(--pink-pastel);
-  background: rgba(255, 20, 147, 0.3);
-  box-shadow: 0 0 30px rgba(255, 20, 147, 0.85);
-  color: #FFFFFF;
-}
-
-/* Custom Magnetic Button with Masked Slide Text */
-.magnetic-btn {
-  position: relative;
-  overflow: hidden;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, rgba(255, 20, 147, 0.16), rgba(12, 4, 8, 0.95));
-  border: 1px solid rgba(255, 182, 193, 0.3);
-  border-radius: 9999px;
-  padding: 16px 36px;
-  font-family: var(--font-heading);
-  font-size: 13.5px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #FFF0F5;
-  transition: border-color 0.4s ease, box-shadow 0.4s ease, transform 0.2s ease-out;
-  cursor: pointer;
-}
-
-.magnetic-btn:hover {
-  border-color: #FF1493;
-  box-shadow: 0 0 35px rgba(255, 20, 147, 0.55), inset 0 0 20px rgba(255, 20, 147, 0.2);
-}
-
-.magnetic-btn .btn-text-track {
-  position: relative;
-  overflow: hidden;
-  height: 20px;
-  display: flex;
-  flex-direction: column;
-}
-
-.magnetic-btn .btn-text-primary,
-.magnetic-btn .btn-text-secondary {
-  display: block;
-  height: 20px;
-  line-height: 20px;
-  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.magnetic-btn .btn-text-secondary {
-  color: #FFB6C1;
-}
-
-.magnetic-btn:hover .btn-text-primary {
-  transform: translateY(-100%);
-}
-
-.magnetic-btn:hover .btn-text-secondary {
-  transform: translateY(-100%);
-}
-
-/* Custom Cursor Styles */
-.custom-cursor-dot {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #FF1493;
-  box-shadow: 0 0 10px #FF1493, 0 0 20px #FFB6C1;
-  pointer-events: none;
-  z-index: 10000;
-  transform: translate(-50%, -50%);
-  mix-blend-mode: difference;
-  transition: width 0.25s ease, height 0.25s ease, background-color 0.25s ease;
-}
-
-.custom-cursor-aura {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(255, 105, 180, 0.45);
-  background: radial-gradient(circle, rgba(255, 20, 147, 0.12) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 9999;
-  transform: translate(-50%, -50%);
-  transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1), height 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease, background 0.35s ease;
-}
-
-.cursor-hover .custom-cursor-dot {
-  width: 14px;
-  height: 14px;
-  background: #FFF0F5;
-}
-
-.cursor-hover .custom-cursor-aura {
-  width: 68px;
-  height: 68px;
-  border-color: rgba(255, 20, 147, 0.85);
-  background: radial-gradient(circle, rgba(255, 20, 147, 0.28) 0%, transparent 80%);
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: #030303;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 182, 193, 0.25);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 20, 147, 0.65);
-}
-
-.leaflet-container {
-  background: #000000 !important;
-  font-family: var(--font-sans) !important;
+@keyframes radarPing {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.75; }
+  100% { transform: scale(1); opacity: 1; }
 }

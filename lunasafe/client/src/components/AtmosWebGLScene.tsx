@@ -6,7 +6,7 @@ interface AtmosWebGLSceneProps {
   currentPhase: number;
 }
 
-export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress, currentPhase }) => {
+export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
@@ -30,7 +30,7 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
     // --- 1. SCENE SETUP ---
     const scene = new THREE.Scene();
     sceneRef.current = scene;
-    scene.fog = new THREE.FogExp2(0x050104, 0.012);
+    scene.fog = new THREE.FogExp2(0x061536, 0.015); // Deep electric midnight blue atmospheric fog
 
     const camera = new THREE.PerspectiveCamera(
       45,
@@ -49,62 +49,66 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
-    renderer.setClearColor(0x030303, 1);
+    renderer.toneMappingExposure = 1.2;
+    renderer.setClearColor(0x020408, 1);
     container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // --- 2. LIGHTING ---
-    const ambientLight = new THREE.AmbientLight(0xffb6c1, 0.4);
+    // --- 2. LIGHTING (Cool Midnight Blue, Rich Teal & Shimmering Silver Starlight) ---
+    const ambientLight = new THREE.AmbientLight(0x38bdf8, 0.35);
     scene.add(ambientLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1.8);
-    keyLight.position.set(12, 18, 10);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.0);
+    keyLight.position.set(12, 20, 10);
     scene.add(keyLight);
 
-    const pinkRimLight = new THREE.DirectionalLight(0xff1493, 2.5);
-    pinkRimLight.position.set(-10, -5, -8);
-    scene.add(pinkRimLight);
+    const blueRimLight = new THREE.DirectionalLight(0x0d38e8, 3.2);
+    blueRimLight.position.set(-10, -5, -8);
+    scene.add(blueRimLight);
 
-    const thrusterLight = new THREE.PointLight(0xff1493, 3.0, 15);
+    const tealFillLight = new THREE.DirectionalLight(0x00f5ff, 1.6);
+    tealFillLight.position.set(0, -10, 5);
+    scene.add(tealFillLight);
+
+    const thrusterLight = new THREE.PointLight(0x00f5ff, 3.5, 18);
     thrusterLight.position.set(0, -2.8, 0);
     scene.add(thrusterLight);
     thrusterLightRef.current = thrusterLight;
 
     // --- 3. PROCEDURAL TEXTURES ---
-    // Volumetric cloud puff texture
+    // Volumetric cloud puff texture (Deep Royal Blue & Misty White)
     const createCloudTexture = () => {
       const canvas = document.createElement('canvas');
       canvas.width = 256;
       canvas.height = 256;
       const ctx = canvas.getContext('2d')!;
       const grad = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
-      grad.addColorStop(0, 'rgba(255, 105, 180, 0.85)');
-      grad.addColorStop(0.35, 'rgba(219, 39, 119, 0.45)');
-      grad.addColorStop(0.7, 'rgba(40, 5, 25, 0.2)');
+      grad.addColorStop(0, 'rgba(56, 189, 248, 0.85)');
+      grad.addColorStop(0.35, 'rgba(13, 56, 232, 0.55)');
+      grad.addColorStop(0.7, 'rgba(8, 27, 75, 0.25)');
       grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, 256, 256);
       return new THREE.CanvasTexture(canvas);
     };
 
-    // Moon surface texture with craters & bump details
+    // Photorealistic Moon surface texture with high-contrast crater relief
     const createMoonTexture = () => {
       const canvas = document.createElement('canvas');
       canvas.width = 1024;
       canvas.height = 512;
       const ctx = canvas.getContext('2d')!;
-      ctx.fillStyle = '#1c171a';
+      ctx.fillStyle = '#1e2533';
       ctx.fillRect(0, 0, 1024, 512);
 
-      // Noise and lunar maria
-      for (let i = 0; i < 400; i++) {
+      // Lunar Maria & Highland variations
+      for (let i = 0; i < 450; i++) {
         const x = Math.random() * 1024;
         const y = Math.random() * 512;
-        const r = Math.random() * 45 + 5;
+        const r = Math.random() * 50 + 5;
         const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
-        const isLight = Math.random() < 0.4;
-        grad.addColorStop(0, isLight ? 'rgba(240, 220, 230, 0.25)' : 'rgba(10, 5, 12, 0.45)');
+        const isLight = Math.random() < 0.45;
+        grad.addColorStop(0, isLight ? 'rgba(241, 245, 249, 0.28)' : 'rgba(8, 12, 22, 0.5)');
         grad.addColorStop(1, 'transparent');
         ctx.fillStyle = grad;
         ctx.beginPath();
@@ -112,44 +116,44 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
         ctx.fill();
       }
 
-      // Craters with rim shadows
-      for (let i = 0; i < 90; i++) {
+      // High-contrast craters with sharp rim shadows
+      for (let i = 0; i < 110; i++) {
         const x = Math.random() * 1024;
         const y = Math.random() * 512;
-        const r = Math.random() * 16 + 3;
+        const r = Math.random() * 18 + 3;
         ctx.beginPath();
         ctx.arc(x, y, r, 0, Math.PI * 2);
-        ctx.fillStyle = '#0a0508';
+        ctx.fillStyle = '#060a12';
         ctx.fill();
-        ctx.lineWidth = Math.max(1, r * 0.2);
-        ctx.strokeStyle = 'rgba(255, 182, 193, 0.6)';
+        ctx.lineWidth = Math.max(1, r * 0.22);
+        ctx.strokeStyle = 'rgba(226, 232, 240, 0.75)';
         ctx.stroke();
       }
 
       return new THREE.CanvasTexture(canvas);
     };
 
-    // --- 4. SPACECRAFT / LANDER 3D MODEL ---
+    // --- 4. SPACECRAFT / LANDER 3D MODEL (Aerospace Obsidian & Silver Chrome) ---
     const rocketGroup = new THREE.Group();
     rocketGroupRef.current = rocketGroup;
 
-    // Fuselage / Command Module (Metallic Obsidian with Rose-Gold Trim)
+    // Fuselage / Command Module (Metallic Titanium Obsidian with Silver Polish)
     const hullGeom = new THREE.ConeGeometry(0.85, 3.2, 32);
     const hullMat = new THREE.MeshStandardMaterial({
-      color: 0x181419,
-      metalness: 0.85,
-      roughness: 0.2,
-      emissive: 0x220515,
-      emissiveIntensity: 0.3,
+      color: 0x111622,
+      metalness: 0.9,
+      roughness: 0.18,
+      emissive: 0x061536,
+      emissiveIntensity: 0.25,
     });
     const hullMesh = new THREE.Mesh(hullGeom, hullMat);
     hullMesh.position.y = 0.6;
     rocketGroup.add(hullMesh);
 
-    // Avionics / Cockpit Visor Strip (Neon Pink Glow)
+    // Avionics / Cockpit Visor Strip (Brilliant Electric Cyan Glow)
     const visorGeom = new THREE.CylinderGeometry(0.52, 0.68, 0.45, 32, 1, true, -Math.PI / 3, (2 * Math.PI) / 3);
     const visorMat = new THREE.MeshBasicMaterial({
-      color: 0xff1493,
+      color: 0x00f5ff,
       side: THREE.DoubleSide,
     });
     const visorMesh = new THREE.Mesh(visorGeom, visorMat);
@@ -157,12 +161,12 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
     visorMesh.rotation.y = Math.PI / 6;
     rocketGroup.add(visorMesh);
 
-    // RCS Thruster Rings & Service Base
+    // Service Module Base
     const baseGeom = new THREE.CylinderGeometry(0.85, 0.95, 0.8, 32);
     const baseMat = new THREE.MeshStandardMaterial({
-      color: 0x0d0b0f,
-      metalness: 0.9,
-      roughness: 0.35,
+      color: 0x080e18,
+      metalness: 0.92,
+      roughness: 0.3,
     });
     const baseMesh = new THREE.Mesh(baseGeom, baseMat);
     baseMesh.position.y = -1.1;
@@ -172,9 +176,9 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
     for (let i = 0; i < 4; i++) {
       const finGeom = new THREE.BoxGeometry(0.08, 1.2, 0.85);
       const finMat = new THREE.MeshStandardMaterial({
-        color: 0x2d0b1d,
-        metalness: 0.7,
-        roughness: 0.3,
+        color: 0x0a2396,
+        metalness: 0.8,
+        roughness: 0.25,
       });
       const finMesh = new THREE.Mesh(finGeom, finMat);
       const angle = (i * Math.PI) / 2;
@@ -187,7 +191,7 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
     // Rocket Thruster Engine Bell
     const bellGeom = new THREE.CylinderGeometry(0.35, 0.65, 0.75, 24);
     const bellMat = new THREE.MeshStandardMaterial({
-      color: 0x1f1f1f,
+      color: 0x1a2233,
       metalness: 0.95,
       roughness: 0.1,
     });
@@ -195,12 +199,12 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
     bellMesh.position.y = -1.8;
     rocketGroup.add(bellMesh);
 
-    // Thruster Exhaust Flame Cone (Pulsing Neon Pink / Magenta Plume)
+    // Thruster Exhaust Flame Cone (Electric Cyan & Ice-Blue Ion Plume)
     const plumeGeom = new THREE.ConeGeometry(0.6, 2.6, 24, 1, true);
     const plumeMat = new THREE.MeshBasicMaterial({
-      color: 0xff1493,
+      color: 0x00f5ff,
       transparent: true,
-      opacity: 0.85,
+      opacity: 0.88,
       side: THREE.DoubleSide,
     });
     const plumeMesh = new THREE.Mesh(plumeGeom, plumeMat);
@@ -209,12 +213,12 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
     rocketGroup.add(plumeMesh);
     thrusterPlumeRef.current = plumeMesh;
 
-    // Thruster Inner Core (Bright White / Hot Plasma)
+    // Thruster Core (Diamond White Hot Plasma)
     const coreGeom = new THREE.ConeGeometry(0.25, 1.8, 16);
     const coreMat = new THREE.MeshBasicMaterial({
-      color: 0xfff0f5,
+      color: 0xffffff,
       transparent: true,
-      opacity: 0.95,
+      opacity: 0.98,
     });
     const coreMesh = new THREE.Mesh(coreGeom, coreMat);
     coreMesh.position.y = -2.7;
@@ -224,24 +228,24 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
     rocketGroup.position.set(0, -0.6, 2.5);
     scene.add(rocketGroup);
 
-    // --- 5. PHASE 1: VOLUMETRIC PINK CLOUDS ---
+    // --- 5. PHASE 1: VOLUMETRIC MIDNIGHT BLUE & TEAL CLOUDS ---
     const cloudGroup = new THREE.Group();
     cloudGroupRef.current = cloudGroup;
     const cloudTexture = createCloudTexture();
-    const cloudCount = 130;
+    const cloudCount = 140;
 
     for (let i = 0; i < cloudCount; i++) {
       const cloudMat = new THREE.SpriteMaterial({
         map: cloudTexture,
         transparent: true,
-        opacity: 0.65,
+        opacity: 0.7,
         blending: THREE.AdditiveBlending,
-        color: new THREE.Color(i % 2 === 0 ? 0xff1493 : 0xdb2777),
+        color: new THREE.Color(i % 2 === 0 ? 0x0d38e8 : 0x00f5ff),
       });
       const sprite = new THREE.Sprite(cloudMat);
       const radius = 3.5 + Math.random() * 8.5;
       const theta = Math.random() * Math.PI * 2;
-      const y = -15 + Math.random() * 35; // Distributed along ascent column
+      const y = -15 + Math.random() * 35;
       sprite.position.set(Math.cos(theta) * radius, y, Math.sin(theta) * radius);
       const scale = 5.5 + Math.random() * 7.5;
       sprite.scale.set(scale, scale, 1);
@@ -249,25 +253,30 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
     }
     scene.add(cloudGroup);
 
-    // --- 6. PHASE 2 & 3: STARFIELD & WARP STREAKS ---
-    const starCount = 3500;
+    // --- 6. PHASE 2 & 3: STARFIELD & WARP STREAKS (Shimmering Silver & Cyan) ---
+    const starCount = 3800;
     const starGeom = new THREE.BufferGeometry();
     const starPositions = new Float32Array(starCount * 3);
     const starColors = new Float32Array(starCount * 3);
 
     for (let i = 0; i < starCount; i++) {
-      starPositions[i * 3] = (Math.random() - 0.5) * 180;
-      starPositions[i * 3 + 1] = (Math.random() - 0.5) * 220;
+      starPositions[i * 3] = (Math.random() - 0.5) * 190;
+      starPositions[i * 3 + 1] = (Math.random() - 0.5) * 230;
       starPositions[i * 3 + 2] = -10 - Math.random() * 160;
 
-      const isPink = Math.random() < 0.35;
-      if (isPink) {
-        starColors[i * 3] = 1.0;
-        starColors[i * 3 + 1] = 0.45;
-        starColors[i * 3 + 2] = 0.75;
+      const isCyan = Math.random() < 0.25;
+      const isSilver = Math.random() < 0.45;
+      if (isCyan) {
+        starColors[i * 3] = 0.0;
+        starColors[i * 3 + 1] = 0.96;
+        starColors[i * 3 + 2] = 1.0;
+      } else if (isSilver) {
+        starColors[i * 3] = 0.88;
+        starColors[i * 3 + 1] = 0.92;
+        starColors[i * 3 + 2] = 0.98;
       } else {
-        starColors[i * 3] = 0.95;
-        starColors[i * 3 + 1] = 0.95;
+        starColors[i * 3] = 1.0;
+        starColors[i * 3 + 1] = 1.0;
         starColors[i * 3 + 2] = 1.0;
       }
     }
@@ -278,14 +287,14 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
       size: 0.85,
       vertexColors: true,
       transparent: true,
-      opacity: 0.9,
+      opacity: 0.95,
     });
     const starField = new THREE.Points(starGeom, starMat);
     scene.add(starField);
     starFieldRef.current = starField;
 
-    // Warp Lines / Speed Streaks
-    const warpCount = 200;
+    // Warp Lines / Speed Streaks (Ice-Blue & Cyan)
+    const warpCount = 220;
     const warpGeom = new THREE.BufferGeometry();
     const warpPositions = new Float32Array(warpCount * 6);
 
@@ -305,7 +314,7 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
     }
     warpGeom.setAttribute('position', new THREE.BufferAttribute(warpPositions, 3));
     const warpMat = new THREE.LineBasicMaterial({
-      color: 0xff69b4,
+      color: 0x38bdf8,
       transparent: true,
       opacity: 0.0,
       blending: THREE.AdditiveBlending,
@@ -314,27 +323,27 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
     scene.add(warpLines);
     warpLinesRef.current = warpLines;
 
-    // --- 7. PHASE 4: DETAILED 3D LUNAR SPHERE WITH PINK RIM LIGHT ---
+    // --- 7. PHASE 4: DETAILED 3D LUNAR SPHERE WITH COOL CYAN & SILVER RIM LIGHT ---
     const moonTex = createMoonTexture();
     const moonGeom = new THREE.SphereGeometry(4.5, 64, 64);
     const moonMat = new THREE.MeshStandardMaterial({
       map: moonTex,
-      roughness: 0.92,
-      metalness: 0.08,
+      roughness: 0.9,
+      metalness: 0.1,
       bumpMap: moonTex,
-      bumpScale: 0.08,
+      bumpScale: 0.09,
     });
     const moonMesh = new THREE.Mesh(moonGeom, moonMat);
-    moonMesh.position.set(0, 32, -90); // Starts far above in distance
+    moonMesh.position.set(0, 32, -90);
     moonMesh.scale.set(0.1, 0.1, 0.1);
     scene.add(moonMesh);
     moonMeshRef.current = moonMesh;
 
-    // Moon Atmospheric Rim Glow
+    // Moon Atmospheric Rim Glow (Electric Cyan / Ice Blue)
     const glowGeom = new THREE.SphereGeometry(4.75, 48, 48);
     const glowMat = new THREE.ShaderMaterial({
       uniforms: {
-        glowColor: { value: new THREE.Color(0xff1493) },
+        glowColor: { value: new THREE.Color(0x00f5ff) },
         viewVector: { value: camera.position },
       },
       vertexShader: `
@@ -343,7 +352,7 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
         void main() {
           vec3 vNormal = normalize(normalMatrix * normal);
           vec3 vNormel = normalize(normalMatrix * viewVector);
-          intensity = pow(0.65 - dot(vNormal, vNormel), 2.5);
+          intensity = pow(0.62 - dot(vNormal, vNormel), 2.2);
           gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }
       `,
@@ -352,7 +361,7 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
         varying float intensity;
         void main() {
           vec3 glow = glowColor * intensity * 1.8;
-          gl_FragColor = vec4(glow, intensity * 0.85);
+          gl_FragColor = vec4(glow, intensity * 0.9);
         }
       `,
       side: THREE.BackSide,
@@ -393,23 +402,23 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
 
       // Rocket hover breathing & parallax tilt
       if (rocketGroupRef.current) {
-        rocketGroupRef.current.rotation.y = mouseRef.current.x * 0.25 + Math.sin(elapsedTime * 1.5) * 0.03;
-        rocketGroupRef.current.rotation.x = -mouseRef.current.y * 0.2 + Math.cos(elapsedTime * 1.2) * 0.02;
-        rocketGroupRef.current.position.x = mouseRef.current.x * 0.4;
+        rocketGroupRef.current.rotation.y = mouseRef.current.x * 0.22 + Math.sin(elapsedTime * 1.5) * 0.025;
+        rocketGroupRef.current.rotation.x = -mouseRef.current.y * 0.18 + Math.cos(elapsedTime * 1.2) * 0.02;
+        rocketGroupRef.current.position.x = mouseRef.current.x * 0.35;
       }
 
       // Thruster flame flicker
       if (thrusterPlumeRef.current) {
-        const pulse = 0.85 + Math.sin(elapsedTime * 35) * 0.25;
-        thrusterPlumeRef.current.scale.set(pulse, 1.0 + pulse * 0.4, pulse);
+        const pulse = 0.88 + Math.sin(elapsedTime * 35) * 0.22;
+        thrusterPlumeRef.current.scale.set(pulse, 1.0 + pulse * 0.35, pulse);
       }
       if (thrusterLightRef.current) {
-        thrusterLightRef.current.intensity = 2.5 + Math.sin(elapsedTime * 40) * 1.2;
+        thrusterLightRef.current.intensity = 3.0 + Math.sin(elapsedTime * 40) * 1.0;
       }
 
       // Moon subtle self-rotation
       if (moonMeshRef.current) {
-        moonMeshRef.current.rotation.y = elapsedTime * 0.04;
+        moonMeshRef.current.rotation.y = elapsedTime * 0.035;
       }
 
       renderer.render(scene, camera);
@@ -427,7 +436,7 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
     };
   }, []);
 
-  // --- 11. GSAP SCROLL SCRUBBING LOGIC (Link Scroll Progress to 3D World) ---
+  // --- 11. GSAP SCROLL SCRUBBING LOGIC ---
   useEffect(() => {
     const p = Math.max(0, Math.min(1, scrollProgress));
     const scene = sceneRef.current;
@@ -441,32 +450,30 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
     if (!scene || !camera || !rocket) return;
 
     // PHASE 1: The Ascent (p: 0.0 -> 0.28)
-    // Clouds rush downward past the camera, creating intense upward velocity
     if (clouds) {
       clouds.position.y = -p * 110;
       const cloudOpacity = Math.max(0, 1 - (p / 0.32));
       clouds.children.forEach((child) => {
         if ((child as THREE.Sprite).material) {
-          (child as THREE.Sprite).material.opacity = cloudOpacity * 0.65;
+          (child as THREE.Sprite).material.opacity = cloudOpacity * 0.7;
         }
       });
     }
 
-    // Fog & Background Void transition (Troposphere pink tint to absolute deep void)
+    // Fog & Background Void transition (Deep electric blue to pure space void)
     if (scene.fog) {
       if (p < 0.3) {
         (scene.fog as THREE.FogExp2).density = THREE.MathUtils.lerp(0.018, 0.003, p / 0.3);
       } else {
-        (scene.fog as THREE.FogExp2).density = 0.0015;
+        (scene.fog as THREE.FogExp2).density = 0.0012;
       }
     }
 
     // PHASE 2 & 3: Breaking Atmosphere & Deep Space Warp (p: 0.28 -> 0.65)
     if (warp) {
-      // Warp lines fade in during high-speed climb and stretch
       if (p > 0.2 && p < 0.7) {
         const warpIntensity = Math.sin(((p - 0.2) / 0.5) * Math.PI);
-        (warp.material as THREE.LineBasicMaterial).opacity = warpIntensity * 0.75;
+        (warp.material as THREE.LineBasicMaterial).opacity = warpIntensity * 0.8;
         warp.position.y = -(p - 0.2) * 60;
       } else {
         (warp.material as THREE.LineBasicMaterial).opacity = 0.0;
@@ -474,19 +481,15 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
     }
 
     if (stars) {
-      // Stars drift smoothly and accelerate
       stars.position.y = -p * 40;
     }
 
     // PHASE 4: Moon Arrival & Rocket Hover Lock (p: 0.65 -> 1.0)
     if (moon) {
       if (p > 0.45) {
-        const moonProgress = (p - 0.45) / 0.55; // 0.0 -> 1.0
-        // Scale up from 0.1 to 1.15
+        const moonProgress = (p - 0.45) / 0.55;
         const scale = THREE.MathUtils.lerp(0.1, 1.25, Math.pow(moonProgress, 1.8));
         moon.scale.set(scale, scale, scale);
-
-        // Position slides from distant top (0, 32, -90) to foreground (0, 2.2, -7.5)
         moon.position.y = THREE.MathUtils.lerp(32, 2.4, moonProgress);
         moon.position.z = THREE.MathUtils.lerp(-90, -7.8, moonProgress);
       } else {
@@ -497,7 +500,6 @@ export const AtmosWebGLScene: React.FC<AtmosWebGLSceneProps> = ({ scrollProgress
     // Rocket Deceleration and Hover Pitch
     if (p > 0.75) {
       const hoverProgress = (p - 0.75) / 0.25;
-      // Level out rocket and reduce thruster opacity as it enters hover
       rocket.position.y = THREE.MathUtils.lerp(-0.6, -0.15, hoverProgress);
       rocket.position.z = THREE.MathUtils.lerp(2.5, 3.2, hoverProgress);
       if (thrusterPlumeRef.current) {
